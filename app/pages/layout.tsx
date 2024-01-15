@@ -1,6 +1,4 @@
 import React from "react";
-import logo from "@/app/img/logo.png"
-import Image from "next/image";
 
 export default function RegisterLayout({
   children,
@@ -8,8 +6,7 @@ export default function RegisterLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko">
-      <body>
+      <div>
         <header className="bg-gray-800 p-2 mt-0 fixed w-full z-10 top-0">
           <div className="container mx-auto flex flex-wrap items-center">
             <div className="flex w-full md:w-1/2 justify-center md:justify-start text-white font-extrabold">
@@ -35,8 +32,6 @@ export default function RegisterLayout({
         <div className="container  mt-24">
           {children}
         </div>
-
-      </body>
-    </html>
+      </div>
   );
 }

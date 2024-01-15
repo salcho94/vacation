@@ -63,7 +63,7 @@ const getUserInfo = async (body: any) => {
         result = await conn.query(
             `SELECT user_id as 'id' 
                    , user_name as 'name'
-                   , user_auth as 'auth' 
+                   , user_auth_id as 'auth' 
                  FROM user 
                  WHERE user_name = '${body.userName}' and password = '${body.password}'
                  `);
