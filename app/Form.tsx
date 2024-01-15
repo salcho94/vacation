@@ -1,37 +1,53 @@
 "use client";
 
-import {ChangeEvent, FormEvent, useState} from "react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { useRouter  } from "next/navigation";
 import axios from "axios";
-
+import {Cookies} from "react-cookie";
+import Link from "next/link";
+//쿠키사용을위해 선언
+const cookies = new Cookies();
 interface FormData {
-    userId: string;
+    userName: string;
     password: string;
 }
 export default function Form(){
-    const [formData, setFormData] = useState<FormData>({
-        userId: '',
-        password: '',
-    });
-    const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
-    };
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        console.log(formData.userId, formData.password);
-        e.preventDefault();
-        try {
-            const response = await axios.post('/api/auth/login',formData, {
-                headers: {
-                    'Content-Type': 'application/json'
+    const router = useRouter ();
+    const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>();
+
+    const onSubmitHandler: SubmitHandler<FormData> = (data) => {
+        const userName = data.userName;
+        const base64Pw = btoa(data.password);
+        const newFormData = {
+            userName: userName,
+            password: base64Pw,
+        };
+        /**
+         * axios를 사용하여 로그인 정보를 담아 POST 한다.
+         * 이 후 응답 받은 accessToken을 cookie에 저장한다.
+         * 그리고 comment 컴포넌트를 출력할 수 있도록 replace 한다.
+         */
+        axios
+            .post("/api/auth/login", newFormData)
+            .then((response) => {
+                const { accessToken ,success,errormessage} = response.data;
+                if(success){
+                    cookies.set("token", accessToken, {
+                        path: "/",
+                        secure: true,
+                        sameSite: "none",
+                    });
+                    router.replace("/pages/calendar");
+                }else{
+                    alert(errormessage);
                 }
+            })
+            .catch((error) => {
+                alert("아이디 또는 비밀번호를 확인해주세요.");
             });
-            console.log('서버 응답:', response.data);
-        } catch (error) {
-            console.error('에러 발생:', error);
-        }
     };
+
+
 
     return(
         <>
@@ -44,7 +60,7 @@ export default function Form(){
                         </p>
                     </div>
                     <form
-                        onSubmit={handleSubmit}
+                        onSubmit={handleSubmit(onSubmitHandler)}
                         className="flex flex-col space-y-4 bg-gray-50 px-4 py-8 sm:px-16"
                     >
                         <div>
@@ -55,11 +71,11 @@ export default function Form(){
                                 아이디
                             </label>
                             <input
-                                id="userId"
-                                name="userId"
+                                {...register("userName")}
+                                id="userName"
+                                name="userName"
                                 type="text"
                                 placeholder="아이디를 입력해주세요."
-                                onChange={handleChange}
                                 required
                                 className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
                             />
@@ -72,10 +88,10 @@ export default function Form(){
                                 비밀번호
                             </label>
                             <input
+                                {...register("password")}
                                 id="password"
                                 name="password"
                                 type="password"
-                                onChange={handleChange}
                                 required
                                 className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
                             />
