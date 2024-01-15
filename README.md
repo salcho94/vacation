@@ -1,2 +1,2 @@
-# vacatios
+# vacation
 next.js
