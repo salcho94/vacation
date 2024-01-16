@@ -1,23 +1,23 @@
 import {cookies} from "next/headers";
 import jwt from "jsonwebtoken";
-import mariadb from "mariadb";
-export const dbconfig= mariadb.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME
-});
+import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 
-export  function authenticate(req: Request) {
+
+export async function verify(token: string, secret: string): Promise<JWTPayload> {
+    const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
+    return payload;
+}
+
+export async function authenticate(req: Request) {
     // code (1/성공)  (2/만료) (3/실패)
     let result = {msg:"",code:"",data:""};
     let token = cookies().get("token"); //cookie의 토큰을 가져온다.
     let decoded = "";
-
     if(token){
         try{
-            decoded = jwt.verify(token.value, process.env.SECRET_KEY);
+            decoded = await verify(token.value, process.env.SECRET_KEY);
         }catch (err){
+            console.log("토큰 발급 실패",err);
             result.msg = "토큰이 만료되었습니다. 다시 로그인 해주세요";
             result.code = "2";
         }
@@ -33,5 +33,4 @@ export  function authenticate(req: Request) {
 
     return  result;
 }
-
 

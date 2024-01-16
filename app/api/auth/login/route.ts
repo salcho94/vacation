@@ -1,26 +1,17 @@
 import {NextResponse} from "next/server";
+import { loggerMiddleware } from '../../../../loggerMiddleware';
 import jwt from "jsonwebtoken";
+import { pool } from "@/app/api/db.config";
 
-import { authenticate ,dbconfig } from "@/app/api/jwt.common"
 
 
-const pool = dbconfig;
-/*
-export async function GET(req: Request) {
-    let res =  authenticate(req);
-
-    console.log(res.data);
-    console.log(res.msg);
-
-    return NextResponse.json(res.msg);
-}
-*/
 
 export async function POST(req: Request) {
+    await loggerMiddleware(req);
     const body = await req.json()
     let res = new NextResponse();
     let rows  =  await getUserInfo(body);
-    console.log(rows);
+
     if (rows) {
         try {
             const accessToken = await new Promise((resolve, reject) => {
@@ -29,10 +20,12 @@ export async function POST(req: Request) {
                         userId: rows.id,
                         userName: rows.name,
                         auth:rows.auth,
+                        authName:rows.authName,
+                        dept:rows.dept,
                     },
                     process.env.SECRET_KEY,
                     {
-                        expiresIn: "5m", //토큰 유효 시간
+                        expiresIn: "10m", //토큰 유효 시간
                     },
                     (err: string, token: string) => {
                         if (err) {
@@ -44,6 +37,8 @@ export async function POST(req: Request) {
                 );
             });
             res = NextResponse.json({ success: true, accessToken });
+
+
         } catch (err) {
             console.log("토큰 생성 실패",err);
             res = NextResponse.json({ success: false, errormessage: "토큰 서명에 실패했습니다." });
@@ -61,12 +56,19 @@ const getUserInfo = async (body: any) => {
     let result = "";
     try{
         result = await conn.query(
-            `SELECT user_id as 'id' 
-                   , user_name as 'name'
-                   , user_auth_id as 'auth' 
-                 FROM user 
-                 WHERE user_name = '${body.userName}' and password = '${body.password}'
-                 `);
+            `SELECT u.user_id as 'id' 
+                   , u.user_name as 'name'
+                   , u.user_auth_id as 'auth' 
+                   , d.dept_name as 'dept'
+                   , a.user_auth_name as 'authName'
+                 FROM user u INNER JOIN dept_code d 
+                 ON u.dept_id = d.dept_id 
+                 INNER JOIN auth_code a
+                 ON u.user_auth_id = a.user_auth_id 
+                 WHERE user_name = '${body.userName}' 
+                 AND password = '${body.password}'
+                 AND u.user_del_yn = 'N'
+                `);
     }catch{
         console.log("db 연결 실패 경로 : /api/auth/login  getUserInfo 요청");
     }finally {

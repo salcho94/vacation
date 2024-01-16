@@ -1,25 +1,19 @@
 "use client"
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin from '@fullcalendar/interaction'
+import interactionPlugin, {DateClickArg, EventResizeDoneArg} from '@fullcalendar/interaction'
 import resourceTimelinePlugin from '@fullcalendar/resource-timeline'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import googleCalendarPlugin from '@fullcalendar/google-calendar';
-
-import {disableCursor} from "@fullcalendar/core/internal";
-import {Simulate} from "react-dom/test-utils";
-import click = Simulate.click;
+import {EventClickArg} from "@fullcalendar/core";
 
 export default function Page() {
 
-
-
-
-    const handleDateClick = (e: any) => {
-
+    const handleDateClick = (e: DateClickArg) => {
+        console.log(e.dateStr);
     }
 
-    const handleShowView = (e:any) => {
+    const handleShowView = (e: EventClickArg) => {
         e.jsEvent.preventDefault();
         if (e.event.url) {
             console.log(e)
@@ -28,8 +22,8 @@ export default function Page() {
         }
 
     }
-    const handleDateSet = (e:any) =>{
-
+    const handleDateSet = (e:EventResizeDoneArg) =>{
+        console.log(e);
 
     }
     return (
@@ -42,10 +36,10 @@ export default function Page() {
                         interactionPlugin,
                         timeGridPlugin,
                     ]}
-                    dateClick={(e)=>{handleDateClick(e)}}
-                    eventResize={(e)=>{handleDateSet(e)}}
-                    eventDrop={(e)=>{handleDateSet(e)}}
-                    eventClick={(e)=>{handleShowView(e)}}
+                    dateClick={(e:DateClickArg)=>{handleDateClick(e)}}
+                    eventResize={(e:EventResizeDoneArg)=>{handleDateSet(e)}}
+                    //eventDrop={(e:EventDropArg)=>{handleDateSet(e)}}
+                    eventClick={(e:EventClickArg)=>{handleShowView(e)}}
                     headerToolbar={{
                         left: 'today,dayGridMonth,dayGridDay',
                         center: 'title',
@@ -55,7 +49,7 @@ export default function Page() {
                     initialView='dayGridMonth'
 
                     nowIndicator={true}
-                    editable={false}
+                    editable={true}
                     selectable={true}
                     selectMirror={true}
                     googleCalendarApiKey={ process.env.NEXT_PUBLIC_API_CALENDAR_KEY }
@@ -63,10 +57,11 @@ export default function Page() {
                         {
                             googleCalendarId:'ko.south_korea#holiday@group.v.calendar.google.com',
                             backgroundColor:'red',
+                            editable:false,
                         },
                     ]}
                     events={[
-                        { title: 'event 1', date: '2024-01-16' },
+                        { title: 'event 1', start: '2024-01-16' ,end:'2024-01-18'},
                     ]}
                     schedulerLicenseKey='GPL-My-Project-Is-Open-Source'
 
