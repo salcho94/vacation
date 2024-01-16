@@ -37,7 +37,6 @@ export default function Form(){
                         secure: true,
                         sameSite: "none",
                     });
-                    console.log(success)
                     router.replace("/pages/calendar");
                 }else{
                     alert(errormessage);

@@ -1,4 +1,4 @@
-import {NextResponse} from "next/server";
+import {NextResponse,NextRequest} from "next/server";
 import { loggerMiddleware } from '../../../../loggerMiddleware';
 import jwt from "jsonwebtoken";
 import { pool } from "@/app/api/db.config";
@@ -6,35 +6,27 @@ import { pool } from "@/app/api/db.config";
 
 
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     await loggerMiddleware(req);
     const body = await req.json()
     let res = new NextResponse();
-    let rows  =  await getUserInfo(body);
+    let rows: any   =  await getUserInfo(body);
 
     if (rows) {
         try {
             const accessToken = await new Promise((resolve, reject) => {
-                jwt.sign(
-                    {
-                        userId: rows.id,
-                        userName: rows.name,
-                        auth:rows.auth,
-                        authName:rows.authName,
-                        dept:rows.dept,
-                    },
-                    process.env.SECRET_KEY,
-                    {
-                        expiresIn: "10m", //토큰 유효 시간
-                    },
-                    (err: string, token: string) => {
-                        if (err) {
-                            reject(err); // 실패시
-                        } else {
-                            resolve(token); // 성공시
-                        }
-                    }
-                );
+                jwt.sign({
+                    userId: rows.id,
+                    userName: rows.name,
+                    auth:rows.auth,
+                    authName:rows.authName,
+                    dept:rows.dept
+                },  process.env.SECRET_KEY as string, {
+                    expiresIn: "10m", //토큰 유효 시간
+                }, (err, token)=>{
+                    err ? reject(err) : resolve(token)
+                })
+
             });
             res = NextResponse.json({ success: true, accessToken });
 

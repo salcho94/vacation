@@ -1,6 +1,7 @@
 "use client"
 
 import React, {useEffect, useState} from "react";
+import {getUserInfo} from "@/app/pages/util";
 import axios from "axios";
 
 interface user{
@@ -14,18 +15,8 @@ interface user{
 export default function Page() {
     const [userInfo,setUserInfo] = useState<user>()
 
-
     useEffect(()=>{
-        async function getUser() {
-            try {
-                const response = await axios.get('/api/user');
-                console.log(response.data.data);
-                setUserInfo(response.data.data)
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        getUser();
+        getUserInfo().then(res => setUserInfo(res));
     },[])
     return (
         <>

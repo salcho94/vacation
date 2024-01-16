@@ -7,7 +7,6 @@ export async function middleware(request: NextRequest) {
 
     let result = await authenticate(request);
 
-
     if(result) {
         if (result.code === "1" && request.nextUrl.pathname == '/') {
             return NextResponse.redirect(new URL('/pages/calendar', request.nextUrl.origin));
