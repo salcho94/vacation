@@ -18,9 +18,10 @@ export default function Form(){
     const onSubmitHandler: SubmitHandler<FormData> = (data) => {
         const userName = data.userName;
         const base64Pw = btoa(data.password);
+        const Pw = data.password;
         const newFormData = {
             userName: userName,
-            password: base64Pw,
+            password: Pw,
         };
         /**
          * axios를 사용하여 로그인 정보를 담아 POST 한다.
@@ -34,8 +35,8 @@ export default function Form(){
                 if(success){
                     cookies.set("token", accessToken, {
                         path: "/",
-                        secure: true,
-                        sameSite: "none",
+                        secure: false,
+                        sameSite: "lax",
                     });
                     router.replace("/pages/calendar");
                 }else{
@@ -55,7 +56,7 @@ export default function Form(){
                 <div className="z-10 w-full max-w-md overflow-hidden rounded-2xl border border-gray-100 shadow-xl">
                     <div className="flex flex-col items-center justify-center space-y-3 border-b border-gray-200 bg-white px-4 py-6 pt-8 text-center sm:px-16">
                         <h3 className="text-xl font-semibold">로그인</h3>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-red-950 ">
                             js company 근태관리 솔루션
                         </p>
                     </div>

@@ -8,10 +8,10 @@ import { pool } from "@/app/api/db.config";
 
 export async function POST(req: NextRequest) {
     await loggerMiddleware(req);
-    const body = await req.json()
-    let res = new NextResponse();
-    let rows: any   =  await getUserInfo(body);
 
+    let res = new NextResponse();
+    let rows: any   =  await getUserInfo(await req.json());
+    console.log(rows)
     if (rows) {
         try {
             const accessToken = await new Promise((resolve, reject) => {
