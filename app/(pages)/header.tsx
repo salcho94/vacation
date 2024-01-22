@@ -15,7 +15,7 @@ export default function Header() {
     const [userInfo,setUserInfo] = useState<user>()
 
     useEffect(() => {
-        getUserInfo().then(res => {setUserInfo(res) ;console.log(res.data)});
+        getUserInfo().then(res => {setUserInfo(res) ;});
     },[])
 
     return (
