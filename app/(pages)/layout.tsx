@@ -1,8 +1,5 @@
 import React from "react";
-import Image from "next/image";
-import logo from "public/img/logo.png";
-import Link from "next/link";
-import Header from "@/app/pages/header";
+import Header from "@/app/(pages)/header";
 
 
 export default function RegisterLayout({

@@ -7,7 +7,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import googleCalendarPlugin from '@fullcalendar/google-calendar';
 import {EventClickArg} from "@fullcalendar/core";
 
-export default function Page() {
+export default function Calendar() {
 
     const handleDateClick = (e: DateClickArg) => {
         console.log(e.dateStr);

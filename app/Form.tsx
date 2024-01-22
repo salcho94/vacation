@@ -23,11 +23,6 @@ export default function Form(){
             userName: userName,
             password: Pw,
         };
-        /**
-         * axios를 사용하여 로그인 정보를 담아 POST 한다.
-         * 이 후 응답 받은 accessToken을 cookie에 저장한다.
-         * 그리고 comment 컴포넌트를 출력할 수 있도록 replace 한다.
-         */
         axios
             .post("/api/auth/login", newFormData)
             .then((response) => {
@@ -38,7 +33,7 @@ export default function Form(){
                         secure: false,
                         sameSite: "lax",
                     });
-                    router.replace("/pages/calendar");
+                    router.replace("/calendar");
                 }else{
                     alert(errormessage);
                 }

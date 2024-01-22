@@ -1,7 +1,7 @@
 "use client"
 
 import React, {useEffect, useState} from "react";
-import {getUserInfo} from "@/app/pages/util";
+import {getUserInfo} from "@/app/(pages)/util";
 import axios from "axios";
 
 interface user{
@@ -12,7 +12,7 @@ interface user{
     dept:string,
 }
 
-export default function Page() {
+export default function MyPage() {
     const [userInfo,setUserInfo] = useState<user>()
 
     useEffect(()=>{

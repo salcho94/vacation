@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from "react";
 import Link from "next/link";
-import {getUserInfo,logOut} from "@/app/pages/util";
+import {getUserInfo,logOut} from "@/app/(pages)/util";
 interface user{
     userId: number,
     userName: string,
@@ -15,7 +15,7 @@ export default function Header() {
     const [userInfo,setUserInfo] = useState<user>()
 
     useEffect(() => {
-        getUserInfo().then(res => setUserInfo(res));
+        getUserInfo().then(res => {setUserInfo(res) ;console.log(res.data)});
     },[])
 
     return (
@@ -30,7 +30,7 @@ export default function Header() {
                     <div className="flex w-full pt-2 content-center justify-between md:w-1/2 md:justify-end">
                         <ul className="list-reset flex justify-between flex-1 md:flex-none items-center">
                             <li className="mr-3">
-                                <a className="inline-block py-2 px-4 text-white no-underline" href="/pages/mypage">내 정보</a>
+                                <a className="inline-block py-2 px-4 text-white no-underline" href="/mypage">내 정보</a>
                             </li>
                             { userInfo?.auth === 1 &&
                             <li className="mr-3">

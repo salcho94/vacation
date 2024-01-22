@@ -2,7 +2,7 @@ import Form from "@/app/Form";
 import Link from "next/link";
 
 
-export default function Page() {
+export default function None() {
     return (
         <>
             <div className="w-full md:w-1/3 mx-auto mt-40">
@@ -15,11 +15,11 @@ export default function Page() {
                         <p className="mt-2 text-sm text-gray-600 leading-relaxed">사용자 정보가 존재하지 않습니다. 로그인 후 이용해 주세요</p>
                     </div>
                     <div className="flex items-center mt-3">
-                        <button className="flex-1 px-4 py-2 ml-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-md">
-                            <Link href="/" >
-                            로그인 하러가기
-                            </Link>
-                        </button>
+                        <Link className="flex-1 text-center px-4 py-2 ml-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-md" href="/" >
+                            <button>
+                                로그인 하러가기
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </div>
