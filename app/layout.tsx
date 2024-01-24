@@ -18,7 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body className="content-center">{children}</body>
     </html>
   );
 }

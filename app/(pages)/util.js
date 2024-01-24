@@ -1,6 +1,17 @@
 import axios from "axios";
-import {redirect} from "next/navigation";
 
+
+export const pathInit = (paths,pathStep) =>{
+    const array  = new Array(paths.length);
+    for(let i in paths){
+        if(paths[i] === pathStep){
+            array[i] = true;
+        }else{
+            array[i] = false;
+        }
+    }
+    return array;
+}
 
 export const getUserInfo = () =>{
     return new Promise(function(resolve, reject) {

@@ -8,9 +8,9 @@ export default function RegisterLayout({
   children: React.ReactNode;
 }) {
   return (
-      <div>
+      <div className="w-full">
         <Header/>
-        <div className="container  mt-24">
+        <div className="mt-16">
           {children}
         </div>
       </div>

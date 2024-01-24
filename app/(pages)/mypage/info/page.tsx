@@ -12,7 +12,7 @@ interface user{
     dept:string,
 }
 
-export default function MyPage() {
+export default function Info() {
     const [userInfo,setUserInfo] = useState<user>()
 
     useEffect(()=>{

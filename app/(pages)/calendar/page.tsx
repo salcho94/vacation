@@ -27,7 +27,7 @@ export default function Calendar() {
 
     }
     return (
-            <div className="w-auto font-bold">
+            <div className="w-auto font-bold pl-14 pr-14 pb-14 pt-10">
                 <FullCalendar
                     plugins={[
                         googleCalendarPlugin,
