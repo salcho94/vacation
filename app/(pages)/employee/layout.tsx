@@ -6,8 +6,6 @@ import Link from "next/link";
 import {pathInit} from "@/app/(pages)/util";
 
 
-
-
 export default function RegisterLayout({
   children,
 }: {
@@ -27,8 +25,8 @@ export default function RegisterLayout({
     }
 
   return (
-      <div>
-          <ul className="grid grid-flow-col text-center text-gray-500 bg-gray-100 rounded-lg p-1">
+      <div >
+          <ul className={`grid grid-flow-col text-center text-gray-500 bg-gray-100 rounded-lg p-1`}>
               <li>
                   <Link href="/employee/create" className={`flex justify-center py-4 hover:bg-white rounded-lg shadow text-indigo-900 ${steps[0] && "bg-white rounded-lg shadow text-indigo-900"}`} onClick={event => handleClick(0)}>직원 등록</Link>
               </li>
@@ -39,7 +37,9 @@ export default function RegisterLayout({
                   <Link href="/employee/vacationList" className={`flex justify-center py-4 hover:bg-white rounded-lg shadow text-indigo-900 ${steps[2] && "bg-white rounded-lg shadow text-indigo-900"}`} onClick={event => handleClick(2)}>연차 사용 내역</Link>
               </li>
           </ul>
-          {children}
+          <div>
+            {children}
+          </div>
       </div>
   );
 }
