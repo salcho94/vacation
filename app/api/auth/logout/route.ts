@@ -1,12 +1,14 @@
 import {NextRequest, NextResponse} from "next/server";
 import {cookies} from "next/headers";
+import {loggerMiddleware} from "../../../../loggerMiddleware";
 
 
 
 
 
 export async function GET(req: NextRequest) {
-    let token = cookies().get("token"); //cookie의 토큰을 가져온다.
+    await loggerMiddleware(req);
+    let token = cookies().get("token");
     if(token){
         cookies().delete('token');
     }

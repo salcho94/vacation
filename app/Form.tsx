@@ -4,27 +4,19 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter  } from "next/navigation";
 import axios from "axios";
 import {Cookies} from "react-cookie";
-import Link from "next/link";
-//쿠키사용을위해 선언
+
 const cookies = new Cookies();
-interface FormData {
+interface loginData {
     userName: string;
     password: string;
 }
 export default function Form(){
     const router = useRouter ();
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<FormData>();
+    const { register, handleSubmit, watch, formState: { errors } } = useForm<loginData>();
 
-    const onSubmitHandler: SubmitHandler<FormData> = (data) => {
-        const userName = data.userName;
-        const base64Pw = btoa(data.password);
-        const Pw = data.password;
-        const newFormData = {
-            userName: userName,
-            password: Pw,
-        };
+    const onSubmitHandler: SubmitHandler<loginData> = (data) => {
         axios
-            .post("/api/auth/login", newFormData)
+            .post("/api/auth/login", data)
             .then((response) => {
                 const { accessToken ,success,errormessage} = response.data;
                 if(success){
@@ -39,7 +31,7 @@ export default function Form(){
                 }
             })
             .catch((error) => {
-                alert("아이디 또는 비밀번호를 확인해주세요.");
+                alert("비밀번호가 올바르지 않습니다");
             });
     };
 

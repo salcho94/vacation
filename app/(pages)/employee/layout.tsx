@@ -3,7 +3,7 @@
 import React, {useState} from "react";
 import { usePathname} from "next/navigation";
 import Link from "next/link";
-import {pathInit} from "@/app/(pages)/util";
+import {pathInit} from "@/app/(pages)/commonApi";
 
 
 export default function RegisterLayout({

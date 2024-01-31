@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from "react";
 import Link from "next/link";
-import {getUserInfo,logOut} from "@/app/(pages)/util";
+import {getUserInfo,logOut} from "@/app/(pages)/commonApi";
 interface user{
     userId: number,
     userName: string,

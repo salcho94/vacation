@@ -1,7 +1,23 @@
 import axios from "axios";
 
 
-export const pathInit = (paths,pathStep) =>{
+export  const getDeptInfo = () => {
+    return new Promise(function(resolve, reject) {
+        axios.get('/api/user/dept')
+            .then(function (response) {
+                resolve(response.data);
+            })
+    });
+}
+export  const getAuthInfo = () => {
+    return new Promise(function(resolve, reject) {
+        axios.get('/api/user/auth')
+            .then(function (response) {
+                resolve(response.data);
+            })
+    });
+}
+export const pathInit = (paths:string[],pathStep:string) =>{
     const array  = new Array(paths.length);
     for(let i in paths){
         if(paths[i] === pathStep){
