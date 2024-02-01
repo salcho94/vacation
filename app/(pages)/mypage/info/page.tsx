@@ -13,7 +13,7 @@ interface user{
 }
 
 export default function Info() {
-    const [userInfo,setUserInfo] = useState<user>()
+    const [userInfo,setUserInfo] = useState<user|any>()
 
     useEffect(()=>{
         getUserInfo().then(res => setUserInfo(res));

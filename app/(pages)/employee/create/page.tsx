@@ -1,7 +1,7 @@
 "use client"
 
 import React, {useEffect, useState} from "react";
-import {SubmitHandler, useForm} from "react-hook-form";
+import {set, SubmitHandler, useForm} from "react-hook-form";
 import axios from "axios";
 import {getAuthInfo, getDeptInfo} from "@/app/(pages)/commonApi";
 
@@ -19,15 +19,21 @@ export default function EmployeeCreate() {
         , handleSubmit
         , watch
         , formState: { errors } } = useForm<createUser>();
-    const [userAuth,setUserAuth] = useState([]);
-    const [userDept,setUserDept] = useState([]);
+    const [userAuth,setUserAuth] = useState<any>([]);
+    const [userDept,setUserDept] = useState<any>([]);
 
     useEffect(() => {
-        getAuthInfo().then(res => {setUserAuth(res) ;});
-        getDeptInfo().then(res => {setUserDept(res) ;});
+        const init = async ():Promise<void> => {
+            let dept = await getDeptInfo();
+            let auth = await getAuthInfo();
+            setUserAuth(auth);
+            setUserDept(dept);
+        }
+        init();
+
     },[])
 
-    const duplicationCheck = async  (userName: string) =>{
+    const duplicationCheck = async (userName: string) =>{
         let result = false;
         await axios.get("/api/user/duplicate",{
             params: {

@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from "react";
 import Link from "next/link";
-import {getUserInfo,logOut} from "@/app/(pages)/commonApi";
+import {getAuthInfo, getDeptInfo, getUserInfo, logOut} from "@/app/(pages)/commonApi";
 interface user{
     userId: number,
     userName: string,
@@ -12,10 +12,10 @@ interface user{
 }
 
 export default function Header() {
-    const [userInfo,setUserInfo] = useState<user>()
+    const [userInfo,setUserInfo] = useState<user|any>()
 
     useEffect(() => {
-        getUserInfo().then(res => {setUserInfo(res) ;});
+        getUserInfo().then(res => {setUserInfo(res)});
     },[])
 
     return (

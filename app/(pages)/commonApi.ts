@@ -1,19 +1,19 @@
 import axios from "axios";
 
 
-export  const getDeptInfo = () => {
+export  const  getDeptInfo = async  () => {
     return new Promise(function(resolve, reject) {
         axios.get('/api/user/dept')
             .then(function (response) {
-                resolve(response.data);
+              resolve(response.data);
             })
     });
 }
-export  const getAuthInfo = () => {
+export  const getAuthInfo = async () => {
     return new Promise(function(resolve, reject) {
         axios.get('/api/user/auth')
             .then(function (response) {
-                resolve(response.data);
+                return  resolve(response.data);
             })
     });
 }
@@ -29,7 +29,7 @@ export const pathInit = (paths:string[],pathStep:string) =>{
     return array;
 }
 
-export const getUserInfo = () =>{
+export const getUserInfo = async () =>{
     return new Promise(function(resolve, reject) {
         axios.get('/api/user')
             .then(function (response) {

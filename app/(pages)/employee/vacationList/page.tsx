@@ -25,7 +25,7 @@ export default function VacationList() {
                             </div>
                             <div className="w-full">
                                 <input
-                                    className="float-left rounded-md bg-gray-200 text-gray-700 leading-tight focus:outline-none py-2 px-2"
+                                    className="w-11/12 float-left rounded-md bg-gray-200 text-gray-700 leading-tight focus:outline-none py-2 px-2"
                                     id="search" type="text" placeholder="직원 이름을 입력해 주세요"/>
                                 <button className="float-right  text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                     검색
@@ -104,7 +104,7 @@ export default function VacationList() {
 
                             </section>
                             <div className="text-center">
-                                <Pagination/>
+
                             </div>
                         </div>
 
