@@ -8,9 +8,10 @@ export async function GET(req: NextRequest) {
     await loggerMiddleware(req);
     const delYn = req.nextUrl.searchParams.get("delYn");
     const endPage = req.nextUrl.searchParams.get("endPage");
+    const keyWord = req.nextUrl.searchParams.get("keyWord");
 
-    const employeeList = await getEmployeeList(delYn,endPage);
-    const totalCount = await getEmployeeTotal(delYn);
+    const employeeList = await getEmployeeList(delYn,endPage,keyWord);
+    const totalCount = await getEmployeeTotal(delYn,keyWord);
 
     if (employeeList && totalCount) {
         return NextResponse.json({employeeList:employeeList, totalCount:totalCount});
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest) {
 }
 
 
-const getEmployeeTotal =  async (delYn :string|null) => {
+const getEmployeeTotal =  async (delYn :string|null,keyWord:string|null) => {
     const conn = await pool.getConnection();
     let query = "";
     query = `   SELECT  COUNT( * ) as 'count'
@@ -31,6 +32,9 @@ const getEmployeeTotal =  async (delYn :string|null) => {
                `
     if(delYn){
         query +=  `WHERE u.user_del_yn = '${delYn}'`
+    }
+    if(keyWord){
+        query +=  `AND u.user_name LIKE '%${keyWord}%'`
     }
 
     let result = [];
@@ -46,7 +50,7 @@ const getEmployeeTotal =  async (delYn :string|null) => {
     return Number(result[0].count);
 }
 
-const getEmployeeList = async (delYn :string|null,endPage :string|null) => {
+const getEmployeeList = async (delYn :string|null,endPage :string|null,keyWord:string|null) => {
     const conn = await pool.getConnection();
     let query = "";
     query = `SELECT u.user_uuid as 'userUuid'
@@ -62,10 +66,14 @@ const getEmployeeList = async (delYn :string|null,endPage :string|null) => {
     if(delYn){
         query +=  `WHERE u.user_del_yn = '${delYn}'`
     }
+    if(keyWord){
+        query +=  `AND u.user_name LIKE '%${keyWord}%'`
+    }
+    query +=  `ORDER BY u.user_reg DESC\n `
     if(endPage){
         query +=  `LIMIT ${endPage}, ${process.env.NEXT_PUBLIC_EMPLOYEE_COUNT}`
     }
-    console.log(query);
+
     let result = "";
     try{
         result = await conn.query(query);

@@ -3,37 +3,53 @@
 import React, {ChangeEvent, useEffect, useState} from "react";
 import Pagination from "@/app/util/pagination";
 import axios from "axios";
-import { useRouter  } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import process from "process";
 import Link from "next/link";
 
 
 export default function EmployeeList() {
-    const router = useRouter();
-    const [employeeList,setEmployeeList] = useState([])
-    const [delYn,setDelYn] = useState<string | null>("")
-    const [total,setTotal] = useState<number>(0)
-    const [curPage,setCurPage] = useState<number>(1);
 
-    useEffect(() => {
-            axios.get('/api/employee',{
-                params:{ "delYn" : delYn  ,"endPage": (curPage - 1) * Number(process.env.NEXT_PUBLIC_EMPLOYEE_COUNT)}
+    const router = useSearchParams();
+    const params = {
+        pageNum : Number(router.get("pageNum")),
+        keyword : router.get("keyWord"),
+        delYn : router.get("delYn")
+    }
+
+    const [employeeList,setEmployeeList] = useState([])
+    const [delYn,setDelYn] = useState<string | null>(!params.delYn ? "" : params.delYn )
+    const [total,setTotal] = useState<number>(0)
+    const [curPage,setCurPage] = useState<number>(!params.pageNum ? 1 : params.pageNum );
+    const [keyWord,setKeyWord] = useState<string>(!params.keyword ? "" : params.keyword );
+    function getList(){
+        axios.get('/api/employee',{
+            params:{ "delYn" : delYn  ,"endPage": (curPage - 1) * Number(process.env.NEXT_PUBLIC_EMPLOYEE_COUNT),"keyWord":keyWord}
+        })
+            .then(function (response) {
+                setEmployeeList(response.data.employeeList);
+                setTotal(response.data.totalCount);
             })
-                .then(function (response) {
-                    console.log(response)
-                    setEmployeeList(response.data.employeeList);
-                    setTotal(response.data.totalCount);
-                })
+    }
+    useEffect(() => {
+        getList();
     }, [delYn,curPage]);
 
     const handleChange =(e: React.ChangeEvent<HTMLSelectElement>) =>{
         setDelYn(e.target.value);
         setCurPage(1);
     }
-
-    const handleShowView = (userUuid: string) =>{
-        router.replace(`/employee/${userUuid}`);
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if(e.key === 'Enter') {
+            getList();
+            setCurPage(1);
+        }
     }
+
+    const handleSearch = () =>{
+        getList();
+    }
+
 
     return (
         <>
@@ -48,9 +64,9 @@ export default function EmployeeList() {
                                 <span className="bg-gray-400 h-2 w-2 m-2 rounded-full"/>퇴사
                                 )
                             </div>
-                            (직원 수:{total})
+                            (직원 수:{total?total:0})
                             <div className="pl-2 inline-flex justify-start cursor-pointer float-right">
-                                <select onChange={(e)=>{handleChange(e)}}>
+                                <select onChange={(e)=>{handleChange(e)}} defaultValue={delYn}>
                                     <option value="">전체</option>
                                     <option value="N">재직중</option>
                                     <option value="Y">퇴사</option>
@@ -68,17 +84,17 @@ export default function EmployeeList() {
                             <div className="w-full">
                                 <input
                                     className="w-11/12 float-left rounded-md bg-gray-200 text-gray-700 leading-tight focus:outline-none py-2 px-2"
-                                    id="search" type="text" placeholder="직원 이름을 입력해 주세요"/>
-                                <button className="float-right  text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                    id="search" type="text" defaultValue={keyWord} onChange={e=>{setKeyWord(e.target.value)}} onKeyDown={handleKeyDown} placeholder="직원 이름을 입력해 주세요"/>
+                                <button className="float-right  text-sm bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={()=>{handleSearch();}}>
                                     검색
                                 </button>
                             </div>
                         </div>
                         <div className="py-3 text-sm">
-                            {employeeList.length > 0 &&
+                            {employeeList ?
                                 employeeList.map((data: any,index:number) => {
                                     return(
-                                        <Link href={`/employee/${data.userUuid}`} key={index}>
+                                        <Link href={`/employee/${data.userUuid}?pageNum=${curPage}&keyWord=${keyWord}&delYn=${delYn}`} key={index}>
                                             <div  className="flex justify-start cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-100 rounded-md px-2 py-2 my-2">
                                                 <span className={`${data.userDelYn == 'Y'? "bg-gray-400" :  "bg-green-400"} h-2 w-2 m-2 rounded-full`}></span>
                                                 <div className="flex-grow font-medium px-2">{data.userName}</div>
@@ -86,7 +102,10 @@ export default function EmployeeList() {
                                             </div>
                                         </Link>
                                     )
-                                })
+                                }) :
+                                <div  className="flex justify-center cursor-pointer text-gray-700 hover:text-blue-400 hover:bg-blue-100 rounded-md px-2 py-2 my-2">
+                                  <strong>{delYn == 'N' ? '재직중인' : '퇴사한' } {keyWord} 직원은 존재하지 않습니다.</strong>
+                                </div>
                             }
                             <div className="text-center">
                                 <Pagination totalPage={total} curPage={curPage} setCurPage={setCurPage}/>

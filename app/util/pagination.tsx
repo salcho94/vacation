@@ -22,6 +22,7 @@ const Pagination: React.FunctionComponent<PagenationType> = ({ totalPage , curPa
                 setCurPage(pageNum == 0 ? 1 : pageNum);
             }
         }else{
+            setCurPage(1);
             e.preventDefault();
         }
 
@@ -34,7 +35,7 @@ const Pagination: React.FunctionComponent<PagenationType> = ({ totalPage , curPa
                         <li>
                             <a className={noActive} onClick={(e)=>{moveClick(e,curPage - 4)}}>◀</a>
                         </li>
-                        {
+                        {total ?
                             [...Array(total)].map((x,index) =>{
                             let pageNum = index + 1;
                                 return(
@@ -46,7 +47,10 @@ const Pagination: React.FunctionComponent<PagenationType> = ({ totalPage , curPa
                                         <a className={curPage === (pageNum) ? active : noActive}>{pageNum}</a>
                                     </li>
                                 )
-                            })
+                            }) :
+                            <li >
+                                <a className={noActive}>1</a>
+                            </li>
                         }
                         <li>
                             <a   className={noActive} onClick={(e)=>{moveClick(e,curPage + 5)}}>▶</a>

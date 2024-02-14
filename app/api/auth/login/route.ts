@@ -4,12 +4,11 @@ import jwt from "jsonwebtoken";
 import { pool } from "@/app/api/db.config";
 import bcrypt from "bcrypt";
 import {getNowTime} from "@/app/util/common";
-
-
-
+import axios from "axios";
 
 export async function POST(req: NextRequest,res: NextResponse) {
     await loggerMiddleware(req);
+
     const loginData = await req.json();
     let isPasswordCorrect = false;
     let rows: any   =  await getUserInfo(loginData);
@@ -39,7 +38,10 @@ export async function POST(req: NextRequest,res: NextResponse) {
                 })
 
             });
-            await updateLastLogin(rows.name);
+            await updateLastLogin(rows.id);
+            if(await getUserVacation(rows.id)){
+                await updateUserVacation(rows.id)
+            }
             res = NextResponse.json({ success: true, accessToken });
         } catch (err) {
             console.log("토큰 생성 실패",err);
@@ -50,13 +52,48 @@ export async function POST(req: NextRequest,res: NextResponse) {
     return res;
 }
 
+const updateUserVacation = async (userId : string) =>{
+    const conn = await pool.getConnection();
+    try{
+        await conn.query(`update user  SET user_vacation  = user_vacation + 1
+                            , last_vac_month  = MONTH(now()) 
+                            WHERE user_uuid = '${userId}'`);
+    }catch{
+        console.log("db 연결 실패 경로 : /api/auth/login  updateUserVacation 요청");
+    }finally {
+        await conn.release();
+    }
+}
 
-const updateLastLogin = async (userName : string) => {
+const getUserVacation = async (userId : string) =>{
+    const conn = await pool.getConnection();
+    let result = false;
+    try{
+        let row = await conn.query(`select user_name 
+        FROM user
+        where (DATE_ADD(user_reg  , INTERVAL 1 MONTH) <= now()) 
+                AND last_vac_month != MONTH(now()) 
+                AND user_uuid = '${userId}'`);
+        result = row.length > 0 ? true : false;
+    }catch{
+        console.log("db 연결 실패 경로 : /api/auth/login  getUserVacation 요청");
+    }finally {
+        await conn.release();
+    }
+
+    return result;
+}
+
+const updateLastLogin = async (userId : string) => {
     const conn = await pool.getConnection();
     const nowTime = await getNowTime();
-
+    let ip ="";
+    await axios.get('https://geolocation-db.com/json/')
+        .then((res) => {
+            ip =  res.data.IPv4;
+        })
     try{
-       await conn.query(`UPDATE user SET user_last_time = '${nowTime}' WHERE user_name = '${userName}'`);
+       await conn.query(`UPDATE user SET user_last_time = '${nowTime}',user_last_ip = '${ip}' WHERE user_uuid = '${userId}'`);
     }catch{
         console.log("db 연결 실패 경로 : /api/auth/login  updateLastLogin 요청");
     }finally {

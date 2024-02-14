@@ -15,8 +15,8 @@ export default function RegisterLayout({
     const pathname = usePathname();
     const splitPath = pathname.split('/');
     const pathStep = splitPath[splitPath.length - 1];
-
     const pathList = ['create','list','vacationList'];
+
     const [steps,setSteps] = useState<any[]>(pathInit(pathList,pathStep));
     const handleClick = (stepNum: number) =>{
         let copy = [false,false,false];

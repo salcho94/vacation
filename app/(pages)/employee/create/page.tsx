@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from "react";
 import {set, SubmitHandler, useForm} from "react-hook-form";
 import axios from "axios";
-import {getAuthInfo, getDeptInfo} from "@/app/(pages)/commonApi";
+import {getAuthInfo, getDeptInfo, getUserDetail} from "@/app/(pages)/commonApi";
 
 interface createUser {
     userName: string;
@@ -29,8 +29,9 @@ export default function EmployeeCreate() {
             setUserAuth(auth);
             setUserDept(dept);
         }
-        init();
-
+        return () => {
+            init();
+        }
     },[])
 
     const duplicationCheck = async (userName: string) =>{

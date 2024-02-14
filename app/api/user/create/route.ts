@@ -38,13 +38,16 @@ const insertUser = async (data: any) => {
                     , user_name
                     , password
                     , user_reg
+                    , last_vac_month
                     )VALUES(
                     '${data.uuid}'
                     ,'${data.userAuth}'
                     ,'${data.userDept}'
                     ,'${data.userName}'
                     ,'${data.password}'
-                    , now());
+                    , now()
+                    , MONTH(now())
+                    );
                 `);
     }catch{
         console.log("db 연결 실패 경로 : /api/user/create  insertUser 요청");
