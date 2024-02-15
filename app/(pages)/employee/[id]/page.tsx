@@ -31,28 +31,24 @@ export default function EmployeeView(props: any) {
         userVacation: 0,
     });
     const { register, handleSubmit, formState: { errors } }  = useForm<updateUser>();
-
+    const [id, setId] = useState(props.params.id);
     const [userAuth,setUserAuth] = useState<any>([]);
     const [userDept,setUserDept] = useState<any>([]);
 
 
     useEffect(() => {
-        const init = async ():Promise<void> => {
-
-            let dept = await getDeptInfo();
-            let auth = await getAuthInfo();
-            await getUserDetail(props.params.id).then((data: any) =>{
-                if(data.success){
-                    setUserDetail(data.employee);
-                }
-            })
-            setUserAuth(auth);
-            setUserDept(dept);
-        }
-        return () => {
-            init();
-        }
-    },[])
+        getDeptInfo().then(deptData =>{
+            setUserDept(deptData);
+        })
+        getAuthInfo().then(authData =>{
+            setUserAuth(authData);
+        })
+        getUserDetail(id).then((data: any) =>{
+            if(data.success){
+                setUserDetail(data.employee);
+            }
+        })
+    },[id])
     const handleVacationChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
         if(Number(e.target.value) > 31){
             alert("연차는 31개를 초과 하실수 없습니다.");

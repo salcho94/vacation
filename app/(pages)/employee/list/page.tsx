@@ -1,6 +1,6 @@
 "use client"
 
-import React, {ChangeEvent, useEffect, useState} from "react";
+import React, { useEffect, useState,useCallback} from "react";
 import Pagination from "@/app/util/pagination";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
@@ -11,30 +11,28 @@ import Link from "next/link";
 export default function EmployeeList() {
 
     const router = useSearchParams();
-    const params = {
-        pageNum : Number(router.get("pageNum")),
-        keyword : router.get("keyWord"),
-        delYn : router.get("delYn")
-    }
 
+    const [params,setParams] = useState({pageNum : Number(router.get("pageNum")),
+        keyword : router.get("keyWord"),
+        delYn : router.get("delYn")})
     const [employeeList,setEmployeeList] = useState([])
     const [delYn,setDelYn] = useState<string>(!params.delYn ? "" : params.delYn )
     const [total,setTotal] = useState<number>(0)
     const [curPage,setCurPage] = useState<number>(!params.pageNum ? 1 : params.pageNum );
     const [keyWord,setKeyWord] = useState<string>(!params.keyword ? "" : params.keyword );
-    function getList(){
+    const getList = useCallback(() => {
         axios.get('/api/employee',{
             params:{ "delYn" : delYn  ,"endPage": (curPage - 1) * Number(process.env.NEXT_PUBLIC_EMPLOYEE_COUNT),"keyWord":keyWord}
         })
             .then(function (response) {
-                setDelYn(delYn);
                 setEmployeeList(response.data.employeeList);
                 setTotal(response.data.totalCount);
             })
-    }
+    },[delYn, curPage, keyWord]);
+
     useEffect(() => {
         getList();
-    }, [delYn,curPage]);
+    }, [delYn,curPage,getList]);
 
     const handleChange =(e: React.ChangeEvent<HTMLSelectElement>) =>{
         setDelYn(e.target.value);
