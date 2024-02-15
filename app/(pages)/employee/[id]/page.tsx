@@ -1,12 +1,10 @@
 "use client"
 
 import React, {useEffect, useState} from "react";
-import Link from "next/link";
-import {DELETE, getAuthInfo, getDeptInfo, getUserDetail, getUserInfo} from "@/app/(pages)/commonApi";
+import {DELETE, getAuthInfo, getDeptInfo, getUserDetail, getUserInfo, UPDATE} from "@/app/(pages)/commonApi";
 import {SubmitHandler, useForm} from "react-hook-form";
+import {number} from "prop-types";
 
-import axios from "axios";
-import {x} from "@fullcalendar/resource/internal-common";
 interface updateUser {
     uuid : string
     authId : number
@@ -21,7 +19,19 @@ interface updateUser {
 
 
 export default function EmployeeView(props: any) {
-    const [userDetail,setUserDetail] = useState<updateUser | null>();
+    const [userDetail,setUserDetail] = useState<updateUser>({
+        uuid : '',
+        authId: 0,
+        deptId: 0,
+        userDelYn: "",
+        userLastIp: "",
+        userLastTime: "",
+        userName: "",
+        userReg: "",
+        userVacation: 0,
+    });
+    const { register, handleSubmit, formState: { errors } }  = useForm<updateUser>();
+
     const [userAuth,setUserAuth] = useState<any>([]);
     const [userDept,setUserDept] = useState<any>([]);
 
@@ -29,24 +39,41 @@ export default function EmployeeView(props: any) {
     useEffect(() => {
         const init = async ():Promise<void> => {
             const result = await getUserDetail(props.params.id);
-            if(result.success == 'Y'){
-                setUserDetail(result.employee);
-            }
             let dept = await getDeptInfo();
             let auth = await getAuthInfo();
 
             setUserAuth(auth);
             setUserDept(dept);
+            if(result.success == 'Y'){
+                setUserDetail(result.employee);
+            }
         }
         return () => {
             init();
         }
     },[])
-    const handleUpdate: SubmitHandler<updateUser> = async (data) => {
 
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) =>{
+        if(e.target.name == 'userVacation'){
+            if(Number(e.target.value) > 31){
+                alert("연차는 31개를 초과 하실수 없습니다.");
+                e.target.value = '';
+            }else if(Number(e.target.value) < 0){
+                alert("연차는 마이너스 하실수 없습니다.");
+                e.target.value = '';
+            }else{
+                setUserDetail({...userDetail,['userVacation']:Number(e.target.value)});
+            }
+        }else{
+            setUserDetail({...userDetail,[e.target.name]:e.target.value});
+        }
     }
-    const handleDelete: SubmitHandler<updateUser> = async () => {
-        DELETE('/employee/delete',"회원 삭제를 진행할까요. 회원정보가 소멸됩니다.\r💥 재직상태를 변경하시려면 재직여부를 수정해 주세요",userDetail?.uuid);
+    const handleUpdate: SubmitHandler<updateUser> = async () => {
+        UPDATE('/employee/update',"회원정보를 수정하시겠습니까?",userDetail);
+    }
+    const handleDelete = async (event: React.MouseEvent<HTMLElement>,uuid: string) => {
+        event.preventDefault();
+        DELETE('/employee/delete',"회원 삭제를 진행할까요. 회원정보가 소멸됩니다.\r💥 재직상태를 변경하시려면 재직여부를 수정해 주세요",uuid);
     }
     const pageNum = props.searchParams.pageNum;
     const keyWord = props.searchParams.keyWord;
@@ -54,7 +81,12 @@ export default function EmployeeView(props: any) {
 
     return (
         <>
-            <form >
+            <form onSubmit={handleSubmit(handleUpdate)}>
+                <input
+                    {...register("uuid")}
+                    type="hidden"
+                    defaultValue={userDetail?.uuid}
+                />
                 <div className="p-12 bg-gray-100 flex items-center justify-center">
                     <div className="container max-w-screen-lg mx-auto">
                         <div>
@@ -69,6 +101,7 @@ export default function EmployeeView(props: any) {
                                             <div className="md:col-span-2">
                                                 <label htmlFor="full_name">이름</label>
                                                 <input
+                                                    {...register("userName")}
                                                     type="text"
                                                     defaultValue={userDetail?.userName}
                                                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
@@ -78,15 +111,37 @@ export default function EmployeeView(props: any) {
                                             <div className="md:col-span-1">
                                                 <label htmlFor="address">재직여부</label>
                                                 <select
+                                                    {...register("userDelYn")}
+                                                    id="userDelYn"
+                                                    onChange={(e)=>{handleChange(e)}}
                                                     className="w-full text-center  h-10 bg-gray-50 flex border border-gray-200  rounded items-center mt-1"
                                                 >
-                                                    <option>{userDetail?.userDelYn == 'N' ? '재직중' : '퇴사'}</option>
-                                                    <option>{userDetail?.userDelYn != 'N' ? '재직중' : '퇴사'}</option>
+                                                    {
+                                                        userDetail?.userDelYn == 'N' &&
+                                                      <>
+                                                        <option value="N">재직중</option>
+                                                        <option value="Y">퇴사</option>
+                                                      </>
+                                                    }
+                                                    {
+                                                        userDetail?.userDelYn == 'Y' &&
+                                                        <>
+                                                          <option value="Y">퇴사</option>
+                                                          <option value="N">재직중</option>
+                                                        </>
+                                                    }
+
                                                 </select>
                                             </div>
                                             <div className="md:col-span-1">
-                                                <label htmlFor="vacationCnt">연차 갯수</label>
-                                                <input type="number" name="vacationCnt" id="vacationCnt" className="h-10 border mt-1 rounded px-4 w-full bg-gray-50" defaultValue={userDetail?.userVacation}  />
+                                                <label htmlFor="userVacation">연차 갯수</label>
+                                                <input
+                                                    {...register("userVacation")}
+                                                    type="number"
+                                                    onChange={(e)=>{handleChange(e)}}
+                                                    id="userVacation"
+                                                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                                    defaultValue={userDetail?.userVacation}  />
                                             </div>
                                             <div className="md:col-span-1">
                                                 <div className="inline-flex items-end">
@@ -95,26 +150,47 @@ export default function EmployeeView(props: any) {
                                             </div>
                                             <div className="md:col-span-2">
                                                 <label htmlFor="password">마지막 접속 IP</label>
-                                                <input
-                                                    type="text"
-                                                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                                    defaultValue={userDetail?.userLastIp}
-                                                    readOnly={true}
-                                                />
+                                                {userDetail?.userLastIp  != null?
+                                                    <input
+                                                        {...register("userLastIp")}
+                                                        type="text"
+                                                        className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                                        defaultValue={userDetail?.userLastIp}
+                                                        readOnly={true}
+                                                    /> :
+                                                    <input
+                                                        type="text"
+                                                        className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                                        defaultValue="접속기록이 존재하지 않습니다"
+                                                        readOnly={true}
+                                                    />
+                                                }
                                             </div>
                                             <div className="md:col-span-2">
                                                 <label htmlFor="passwordChk">마지막 접속 시간</label>
-                                                <input
-                                                    type="text"
-                                                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                                    defaultValue={userDetail?.userLastTime}
-                                                    readOnly={true}
-                                                />
+                                                {userDetail?.userLastTime != null ?
+                                                    <input
+                                                        {...register("userLastTime")}
+                                                        type="text"
+                                                        className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                                        defaultValue={userDetail?.userLastTime}
+                                                        readOnly={true}
+                                                    /> :
+                                                    <input
+                                                        type="text"
+                                                        className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                                        defaultValue="접속기록이 존재하지 않습니다"
+                                                        readOnly={true}
+                                                    />
+                                                }
                                             </div>
                                             <div className="md:col-span-2 ">
                                                 <label >직급</label>
                                                 <div className="text-gray-600">
                                                     <select
+                                                        {...register("authId")}
+                                                        onChange={(e)=>{handleChange(e)}}
+                                                        id="authId"
                                                         className="w-full text-center  h-10 bg-gray-50 flex border border-gray-200  rounded items-center mt-1"
                                                     >
                                                         {
@@ -144,6 +220,9 @@ export default function EmployeeView(props: any) {
                                                 <label >부서</label>
                                                 <div className="text-gray-600">
                                                     <select
+                                                        {...register("deptId")}
+                                                        onChange={(e)=>{handleChange(e)}}
+                                                        id="deptId"
                                                         className="w-full text-center  h-10 bg-gray-50 flex border border-gray-200  rounded items-center mt-1"
                                                     >
                                                         {
@@ -170,6 +249,7 @@ export default function EmployeeView(props: any) {
                                             <div className="md:col-span-2">
                                                 <label htmlFor="passwordChk">등록일</label>
                                                 <input
+                                                    {...register("userReg")}
                                                     type="text"
                                                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                                                     defaultValue={userDetail?.userReg}
@@ -183,7 +263,7 @@ export default function EmployeeView(props: any) {
                                                     </a>
                                                 </div>
                                                 <div className="inline-flex items-end">
-                                                    <button type="button" className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={() => handleDelete()}>삭제</button>
+                                                    <button type="button" className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={(event) => handleDelete(event,userDetail?.uuid)}>삭제</button>
                                                 </div>
                                                 <div className="inline-flex items-end ml-1">
                                                     <button className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">수정</button>

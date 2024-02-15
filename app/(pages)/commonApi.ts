@@ -90,20 +90,20 @@ export const DELETE = (url:string,msg:string,uuid:string) => {
 
 }
 
-export const UPDATE = (url:string,msg:string,body:string) =>{
-    axios.post(`/api/${url}`,)
-        .then(function (response) {
-            // 성공 핸들링
-            console.log(response);
-            if(response){
-                window.location.href ="/";
-            }
-        })
-        .catch(function (error) {
-            // 에러 핸들링
-            console.log(error);
-        })
-        .finally(function () {
-            // 항상 실행되는 영역
-        });
+export const UPDATE = (url:string,msg:string,body:any) => {
+    if (window.confirm(msg)) {
+        axios.post(`/api/${url}`, body)
+            .then(function (response) {
+                // 성공 핸들링
+                if (response.data) {
+                    alert('수정이 완료되었습니다.');
+                } else {
+                    console.log('수정 실패')
+                }
+            })
+            .catch(function (error) {
+                // 에러 핸들링
+                console.log("직원 수정 실패함" + error);
+            })
+    }
 }
