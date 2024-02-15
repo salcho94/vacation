@@ -1,9 +1,9 @@
 "use client"
 
 import React, {useEffect, useState} from "react";
-import {DELETE, getAuthInfo, getDeptInfo, getUserDetail, getUserInfo, UPDATE} from "@/app/(pages)/commonApi";
+import {DELETE, getAuthInfo, getDeptInfo, getUserDetail, UPDATE} from "@/app/(pages)/commonApi";
 import {SubmitHandler, useForm} from "react-hook-form";
-import {number} from "prop-types";
+
 
 interface updateUser {
     uuid : string
@@ -38,35 +38,35 @@ export default function EmployeeView(props: any) {
 
     useEffect(() => {
         const init = async ():Promise<void> => {
-            const result = await getUserDetail(props.params.id);
+
             let dept = await getDeptInfo();
             let auth = await getAuthInfo();
-
+            await getUserDetail(props.params.id).then((data: any) =>{
+                if(data.success){
+                    setUserDetail(data.employee);
+                }
+            })
             setUserAuth(auth);
             setUserDept(dept);
-            if(result.success == 'Y'){
-                setUserDetail(result.employee);
-            }
         }
         return () => {
             init();
         }
     },[])
-
-    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) =>{
-        if(e.target.name == 'userVacation'){
-            if(Number(e.target.value) > 31){
-                alert("연차는 31개를 초과 하실수 없습니다.");
-                e.target.value = '';
-            }else if(Number(e.target.value) < 0){
-                alert("연차는 마이너스 하실수 없습니다.");
-                e.target.value = '';
-            }else{
-                setUserDetail({...userDetail,['userVacation']:Number(e.target.value)});
-            }
+    const handleVacationChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
+        if(Number(e.target.value) > 31){
+            alert("연차는 31개를 초과 하실수 없습니다.");
+            e.target.value = '';
+        }else if(Number(e.target.value) < 0){
+            alert("연차는 마이너스 하실수 없습니다.");
+            e.target.value = '';
         }else{
-            setUserDetail({...userDetail,[e.target.name]:e.target.value});
+            setUserDetail({...userDetail,['userVacation']:Number(e.target.value)});
         }
+
+    }
+    const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) =>{
+            setUserDetail({...userDetail,[e.target.name]:e.target.value});
     }
     const handleUpdate: SubmitHandler<updateUser> = async () => {
         UPDATE('/employee/update',"회원정보를 수정하시겠습니까?",userDetail);
@@ -138,7 +138,7 @@ export default function EmployeeView(props: any) {
                                                 <input
                                                     {...register("userVacation")}
                                                     type="number"
-                                                    onChange={(e)=>{handleChange(e)}}
+                                                    onChange={(e )=>{handleVacationChange(e) }}
                                                     id="userVacation"
                                                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
                                                     defaultValue={userDetail?.userVacation}  />

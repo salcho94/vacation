@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
 
     const {uuid,userDelYn,deptId,authId,userVacation} = await req.json();
     const data = {uuid:uuid,userDelYn:userDelYn,deptId:deptId,authId:authId,userVacation:userVacation}
-    const result = await updateUser(data);
+    const result: any = await updateUser(data);
 
     if(result?.affectedRows > 0){
         return NextResponse.json(true);

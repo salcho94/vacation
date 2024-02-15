@@ -5,7 +5,7 @@ import {pool} from "@/app/api/db.config";
 export async function POST(req: NextRequest) {
     await loggerMiddleware(req);
     const {uuid} = await req.json();
-    const result = await deleteUser(uuid);
+    const result: any = await deleteUser(uuid);
 
     if(result?.affectedRows > 0){
         return NextResponse.json(true);

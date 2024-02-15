@@ -9,9 +9,9 @@ export async function GET(req: NextRequest) {
     const id = req.nextUrl.searchParams.get("uuid");
     const employeeDetail = await getEmployeeDetail(id);
     if(employeeDetail.length > 0){
-        return NextResponse.json({"employee":employeeDetail[0] , "success" : 'Y'});
+        return NextResponse.json({"employee":employeeDetail[0] , "success" : true});
     }else{
-        return NextResponse.json({"msg":"직원 정보를 불러올수 없습니다.(UUID 오류)" , "success" : 'N'});
+        return NextResponse.json({"msg":"직원 정보를 불러올수 없습니다.(UUID 오류)" , "success" : false});
     }
 }
 

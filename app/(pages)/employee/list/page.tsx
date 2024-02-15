@@ -18,7 +18,7 @@ export default function EmployeeList() {
     }
 
     const [employeeList,setEmployeeList] = useState([])
-    const [delYn,setDelYn] = useState<string | null>(!params.delYn ? "" : params.delYn )
+    const [delYn,setDelYn] = useState<string>(!params.delYn ? "" : params.delYn )
     const [total,setTotal] = useState<number>(0)
     const [curPage,setCurPage] = useState<number>(!params.pageNum ? 1 : params.pageNum );
     const [keyWord,setKeyWord] = useState<string>(!params.keyword ? "" : params.keyword );
@@ -27,6 +27,7 @@ export default function EmployeeList() {
             params:{ "delYn" : delYn  ,"endPage": (curPage - 1) * Number(process.env.NEXT_PUBLIC_EMPLOYEE_COUNT),"keyWord":keyWord}
         })
             .then(function (response) {
+                setDelYn(delYn);
                 setEmployeeList(response.data.employeeList);
                 setTotal(response.data.totalCount);
             })
@@ -66,7 +67,7 @@ export default function EmployeeList() {
                             </div>
                             (직원 수:{total?total:0})
                             <div className="pl-2 inline-flex justify-start cursor-pointer float-right">
-                                <select onChange={(e)=>{handleChange(e)}} defaultValue={delYn}>
+                                <select value={delYn} onChange={(e)=>{handleChange(e)}} >
                                     <option value="">전체</option>
                                     <option value="N">재직중</option>
                                     <option value="Y">퇴사</option>
