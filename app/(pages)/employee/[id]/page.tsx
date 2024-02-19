@@ -14,7 +14,7 @@ interface updateUser {
     userLastTime : string
     userName : string
     userReg : string
-    userVacation : number | null
+    userVacation : string
 }
 
 
@@ -28,7 +28,7 @@ export default function EmployeeView(props: any) {
         "userLastTime": "",
         "userName": "",
         "userReg": "",
-        "userVacation": null,
+        "userVacation": "",
     });
     const { register, handleSubmit, formState: { errors } }  = useForm<updateUser>();
     const [id, setId] = useState(props.params.id);
@@ -46,7 +46,7 @@ export default function EmployeeView(props: any) {
             })
             getUserDetail(id).then((data: any) =>{
                 if(data.success){
-                    setUserDetail({...userDetail,...data.employee});
+                    setUserDetail(data.employee);
                 }
             })
         }
@@ -62,7 +62,7 @@ export default function EmployeeView(props: any) {
             alert("연차는 마이너스 하실수 없습니다.");
             e.target.value = '';
         }else{
-            setUserDetail({...userDetail,['userVacation']:Number(e.target.value)});
+            setUserDetail({...userDetail,['userVacation']:e.target.value});
         }
 
     }
@@ -136,13 +136,23 @@ export default function EmployeeView(props: any) {
                                             </div>
                                             <div className="md:col-span-1">
                                                 <label htmlFor="userVacation">연차 갯수</label>
-                                                <input
-                                                    {...register("userVacation")}
-                                                    type="number"
-                                                    onChange={(e )=>{handleVacationChange(e) }}
-                                                    id="userVacation"
-                                                    className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                                    defaultValue={userDetail?.userVacation == 0 ? 0 : userDetail?.userVacation}  />
+                                                {userDetail?.userVacation  != null ?
+                                                    <input
+                                                        {...register("userVacation")}
+                                                        type="number"
+                                                        onChange={(e )=>{handleVacationChange(e) }}
+                                                        id="userVacation"
+                                                        className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                                        defaultValue={userDetail?.userVacation}  />
+                                                    :
+                                                    <input
+                                                        {...register("userVacation")}
+                                                        type="number"
+                                                        onChange={(e )=>{handleVacationChange(e) }}
+                                                        id="userVacation"
+                                                        className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                                        defaultValue={0}  />
+                                                }
                                             </div>
                                             <div className="md:col-span-1">
                                                 <div className="inline-flex items-end">
