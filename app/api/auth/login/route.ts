@@ -5,10 +5,16 @@ import { pool } from "@/app/api/db.config";
 import bcrypt from "bcrypt";
 import {getNowTime} from "@/app/util/common";
 import axios from "axios";
+import { headers } from "next/headers";
 
 export async function POST(req: NextRequest,res: NextResponse) {
     await loggerMiddleware(req);
 
+
+    const headersList = headers();
+    const ip = String(headersList.get("x-forwarded-for")).replace(/^::ffff:/, '')
+
+    console.log(ip);
     const loginData = await req.json();
     let isPasswordCorrect = false;
     let rows: any   =  await getUserInfo(loginData);
@@ -38,7 +44,7 @@ export async function POST(req: NextRequest,res: NextResponse) {
                 })
 
             });
-            await updateLastLogin(rows.id);
+            await updateLastLogin(rows.id,ip);
             if(await getUserVacation(rows.id)){
                 await updateUserVacation(rows.id)
             }
@@ -84,23 +90,24 @@ const getUserVacation = async (userId : string) =>{
     return result;
 }
 
-const updateLastLogin = async (userId : string) => {
-    const conn = await pool.getConnection();
-    const nowTime = await getNowTime();
-    let ip ="";
-    await axios.get('https://geolocation-db.com/json/')
-        .then((res) => {
-            ip =  res.data.IPv4;
-        })
-    try{
-       await conn.query(`UPDATE user SET user_last_time = '${nowTime}',user_last_ip = '${ip}' WHERE user_uuid = '${userId}'`);
-    }catch{
-        console.log("db 연결 실패 경로 : /api/auth/login  updateLastLogin 요청");
-    }finally {
-        await conn.release();
+const updateLastLogin = async (userId: string,ip: string) => {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const nowTime = await getNowTime();
+        // 매개변수화된 쿼리를 사용하여 사용자의 마지막 로그인 시간과 IP 주소 업데이트
+        await conn.query(
+            'UPDATE user SET user_last_time = ?, user_last_ip = ? WHERE user_uuid = ?',
+            [nowTime, ip, userId]
+        );
+    } catch (error) {
+        console.log("마지막 로그인 업데이트 중 오류 발생:", error);
+    } finally {
+        if (conn) {
+            conn.release();
+        }
     }
-
-}
+};
 
 const getUserInfo = async (body: any) => {
     const conn = await pool.getConnection();

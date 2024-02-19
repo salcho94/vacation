@@ -14,21 +14,21 @@ interface updateUser {
     userLastTime : string
     userName : string
     userReg : string
-    userVacation :number
+    userVacation : number | null
 }
 
 
 export default function EmployeeView(props: any) {
     const [userDetail,setUserDetail] = useState<updateUser>({
-        uuid : '',
-        authId: 0,
-        deptId: 0,
-        userDelYn: "",
-        userLastIp: "",
-        userLastTime: "",
-        userName: "",
-        userReg: "",
-        userVacation: 0,
+        "uuid": '',
+        "authId": 0,
+        "deptId": 0,
+        "userDelYn": "",
+        "userLastIp": "",
+        "userLastTime": "",
+        "userName": "",
+        "userReg": "",
+        "userVacation": null,
     });
     const { register, handleSubmit, formState: { errors } }  = useForm<updateUser>();
     const [id, setId] = useState(props.params.id);
@@ -37,17 +37,22 @@ export default function EmployeeView(props: any) {
 
 
     useEffect(() => {
-        getDeptInfo().then(deptData =>{
-            setUserDept(deptData);
-        })
-        getAuthInfo().then(authData =>{
-            setUserAuth(authData);
-        })
-        getUserDetail(id).then((data: any) =>{
-            if(data.success){
-                setUserDetail(data.employee);
-            }
-        })
+        const init = () =>{
+            getDeptInfo().then(deptData =>{
+                setUserDept(deptData);
+            })
+            getAuthInfo().then(authData =>{
+                setUserAuth(authData);
+            })
+            getUserDetail(id).then((data: any) =>{
+                if(data.success){
+                    setUserDetail({...userDetail,...data.employee});
+                }
+            })
+        }
+       return () => {
+           init();
+       }
     },[id])
     const handleVacationChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
         if(Number(e.target.value) > 31){
@@ -137,7 +142,7 @@ export default function EmployeeView(props: any) {
                                                     onChange={(e )=>{handleVacationChange(e) }}
                                                     id="userVacation"
                                                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                                    defaultValue={userDetail?.userVacation}  />
+                                                    defaultValue={userDetail?.userVacation == 0 ? 0 : userDetail?.userVacation}  />
                                             </div>
                                             <div className="md:col-span-1">
                                                 <div className="inline-flex items-end">

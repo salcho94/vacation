@@ -97,6 +97,7 @@ export const UPDATE = (url:string,msg:string,body:any) => {
                 // 성공 핸들링
                 if (response.data) {
                     alert('수정이 완료되었습니다.');
+                    window.location.reload();
                 } else {
                     console.log('수정 실패')
                 }
