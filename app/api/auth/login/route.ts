@@ -9,13 +9,10 @@ import { headers } from "next/headers";
 
 export async function POST(req: NextRequest,res: NextResponse) {
     await loggerMiddleware(req);
-
-
     const headersList = headers();
     const ip = String(headersList.get("x-forwarded-for")).replace(/^::ffff:/, '')
-
-    console.log(ip);
     const loginData = await req.json();
+
     let isPasswordCorrect = false;
     let rows: any   =  await getUserInfo(loginData);
 
@@ -59,7 +56,7 @@ export async function POST(req: NextRequest,res: NextResponse) {
     return res;
 }
 
-const updateUserVacation = async (userId : string) =>{
+const updateUserVacation = async (userId : string) => {
     const conn = await pool.getConnection();
     try{
         await conn.query(`update user  SET user_vacation  = user_vacation + 1
