@@ -1,9 +1,9 @@
 "use client"
-
-import React, {useEffect, useState} from "react";
-import {set, SubmitHandler, useForm} from "react-hook-form";
-import axios from "axios";
 import {getAuthInfo, getDeptInfo, getUserDetail} from "@/app/(pages)/commonApi";
+import React, {useEffect, useState} from "react";
+import {SubmitHandler, useForm} from "react-hook-form";
+import axios from "axios";
+
 
 interface createUser {
     userName: string;
@@ -23,15 +23,20 @@ export default function EmployeeCreate() {
     const [userDept,setUserDept] = useState<any>([]);
 
     useEffect(() => {
-        const init = async ():Promise<void> => {
-            let dept = await getDeptInfo();
-            let auth = await getAuthInfo();
-            setUserAuth(auth);
-            setUserDept(dept);
+        const init = () =>{
+            getDeptInfo().then(deptData =>{
+                setUserDept(deptData);
+            })
+            getAuthInfo().then(authData =>{
+                setUserAuth(authData);
+            })
         }
+        init();
+        // 상태 초기화 로직
         return () => {
-            init();
-        }
+            setUserAuth([]);
+            setUserDept([]);
+        };
     },[])
 
     const duplicationCheck = async (userName: string) =>{

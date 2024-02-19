@@ -37,22 +37,32 @@ export default function EmployeeView(props: any) {
 
 
     useEffect(() => {
-        const init = () =>{
-            getDeptInfo().then(deptData =>{
-                setUserDept(deptData);
-            })
-            getAuthInfo().then(authData =>{
-                setUserAuth(authData);
-            })
-            getUserDetail(id).then((data: any) =>{
-                if(data.success){
-                    setUserDetail(data.employee);
-                }
-            })
-        }
-       return () => {
-           init();
-       }
+        const fetchData =  () => {
+            try {
+                getDeptInfo().then(deptData =>{
+                    setUserDept(deptData);
+                })
+                getAuthInfo().then(authData =>{
+                    setUserAuth(authData);
+                })
+                getUserDetail(id).then((data: any) =>{
+                    if(data.success){
+                        setUserDetail(data.employee);
+                    }
+                })
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData(); // 컴포넌트가 마운트될 때 데이터를 가져오도록 호출
+
+        // 상태 초기화 로직
+        return () => {
+            setUserAuth([]);
+            setUserDept([]);
+        };
+
     },[id])
     const handleVacationChange = (e: React.ChangeEvent<HTMLInputElement>) =>{
         if(Number(e.target.value) > 31){
