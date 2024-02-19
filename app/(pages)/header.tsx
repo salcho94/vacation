@@ -3,16 +3,14 @@
 import React, {useEffect, useState} from "react";
 import Link from "next/link";
 import {getAuthInfo, getDeptInfo, getUserInfo, logOut} from "@/app/(pages)/commonApi";
-interface user{
-    userId: number,
-    userName: string,
-    auth:number,
-    authName:string,
-    dept:string,
-}
 
 export default function Header() {
-    const [userInfo,setUserInfo] = useState<user|any>()
+    const [userInfo,setUserInfo] = useState<any>( {userId: 0,
+        userName: "",
+        auth:"",
+        authName:"",
+        dept:"",
+        regDate:""})
 
     useEffect(() => {
         getUserInfo().then(res => {setUserInfo(res)});
