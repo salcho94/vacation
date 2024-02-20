@@ -24,7 +24,7 @@ const MainAlertList: React.FC<Props> = ({ items }) => {
                 {items.map((item, index) => (
                     <li key={index} className="py-1 list-none pr-3 ">
                         <SyntaxHighlighter language="javascript" style={nord} className="code-editor text-sm" >
-                            {item.alertId + "." + JSON.stringify(item.title) + "\n" + new Date(item.regDate).toLocaleString()}
+                            {index+1 + "." + JSON.stringify(item.title) + "\n" +`(${item.cate}) `  + new Date(item.regDate).toLocaleString()}
                         </SyntaxHighlighter>
                     </li>
                 ))}

@@ -22,7 +22,8 @@ const selectAlert = async () => {
         result = await conn.query(
             `
                SELECT alert_id as 'alertId', user_name as 'userName', cate as 'cate', title as 'title', reg_date as 'regDate', link as 'link'
-               FROM alert;
+               FROM alert
+               ORDER BY reg_date DESC;  
                 `);
     }catch{
         console.log("db 연결 실패 경로 : /api/alert/selectAlert  selectAlert 요청");
