@@ -279,9 +279,14 @@ export default function EmployeeView(props: any) {
                                             </div>
                                             <div className="md:col-span-5 text-right">
                                                 <div className="inline-flex items-end mr-1">
-                                                    <a  className="bg-blue-900 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" href={`/employee/list?pageNum=${pageNum}&keyWord=${keyWord}&delYn=${delYn}`}>
-                                                        목록
-                                                    </a>
+                                                    {pageNum ?
+                                                        <a  className="bg-blue-900 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" href={`/employee/list?pageNum=${pageNum}&keyWord=${keyWord}&delYn=${delYn}`}>
+                                                            목록
+                                                        </a>:
+                                                        <a  className="bg-blue-900 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" href={`/employee/list`}>
+                                                            목록
+                                                        </a>
+                                                    }
                                                 </div>
                                                 <div className="inline-flex items-end">
                                                     <button type="button" className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={(event) => handleDelete(event,userDetail?.uuid)}>삭제</button>

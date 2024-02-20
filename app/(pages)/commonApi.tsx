@@ -50,6 +50,15 @@ export const getUserDetail = async (uuid:string) =>{
 }
 
 
+export const getAlert = async () =>{
+    return new Promise(function(resolve, reject) {
+        axios.get('/api/alert')
+            .then(function (response) {
+                resolve(response.data);
+            })
+    });
+}
+
 export const logOut = () =>{
     axios.get('/api/auth/logout')
         .then(function (response) {

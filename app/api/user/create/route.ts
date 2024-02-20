@@ -2,7 +2,9 @@ import {NextResponse,NextRequest} from "next/server";
 import { loggerMiddleware } from 'loggerMiddleware';
 import { v4 as uuid_v4 } from "uuid";
 import {pool} from "@/app/api/db.config";
+
 import bcrypt from "bcrypt";
+import {insertAlert} from "@/app/api/alert.common";
 
 export async function POST(req: NextRequest) {
     await loggerMiddleware(req);
@@ -16,6 +18,9 @@ export async function POST(req: NextRequest) {
     let result = await insertUser(createData);
 
     if(result){
+        let data : any = {name:createData.userName,category:'create',title:`${createData.userName}님 신규가입 되었습니다.`,link:`/employee/${uuid}`}
+        await insertAlert(data)
+
         return NextResponse.json(true);
     }else{
         return NextResponse.json(false);
