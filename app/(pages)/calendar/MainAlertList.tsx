@@ -3,6 +3,7 @@ import React from 'react';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 // @ts-ignore
 import { nord } from 'react-syntax-highlighter/dist/cjs/styles/prism';
+import Link from "next/link";
 
 interface ListItem {
     alertId: number,
@@ -23,9 +24,11 @@ const MainAlertList: React.FC<Props> = ({ items }) => {
             <ul className="list-disc pl-4">
                 {items.map((item, index) => (
                     <li key={index} className="py-1 list-none pr-3 ">
-                        <SyntaxHighlighter language="javascript" style={nord} className="code-editor text-sm" >
-                            {index+1 + "." + JSON.stringify(item.title) + "\n" +`(${item.cate}) `  + new Date(item.regDate).toLocaleString()}
-                        </SyntaxHighlighter>
+                        <Link href={item.link ? item.link : "/"}>
+                            <SyntaxHighlighter language="javascript" style={nord} className="code-editor text-sm" >
+                                {index+1 + "." + JSON.stringify(item.title) + "\n" +`(${item.cate}) `  + new Date(item.regDate).toLocaleString()}
+                            </SyntaxHighlighter>
+                        </Link>
                     </li>
                 ))}
             </ul>
