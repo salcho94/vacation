@@ -10,8 +10,8 @@ export const insertAlert = async (data: any) => {
         result = await conn.query(
             `
                INSERT INTO alert
-                ( user_name, cate, title, link)
-                VALUES( '${data.name}', '${data.category}', '${data.title}',  '${data.link}');
+                ( user_name, cate, title, link, dept)
+                VALUES( '${data.name}', '${data.category}', '${data.title}',  '${data.link}',  '${data.dept}');
                 `);
     }catch{
         console.log("db 연결 실패 경로 : /api/alert/create  insertAlert 요청");

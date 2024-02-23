@@ -9,6 +9,22 @@ export  const  getDeptInfo = async  () => {
             })
     });
 }
+
+export  const  getDeptUser = async  (deptId:number,authId:number) => {
+    return new Promise(function(resolve, reject) {
+        axios.get('/api/auth/dept',{
+            params:
+                {
+                     deptId:deptId
+                    ,authId:authId
+                }
+        })
+            .then(function (response) {
+                resolve(response.data);
+            })
+    });
+}
+
 export  const getAuthInfo = async () => {
     return new Promise(function(resolve, reject) {
         axios.get('/api/user/auth')

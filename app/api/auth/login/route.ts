@@ -34,7 +34,9 @@ export async function POST(req: NextRequest,res: NextResponse) {
                     auth:rows.auth,
                     authName:rows.authName,
                     dept:rows.dept,
-                    regDate:rows.regDate
+                    deptId:rows.deptId,
+                    regDate:rows.regDate,
+                    vacation:rows.vacation
                 },  process.env.SECRET_KEY as string, {
                     expiresIn: `${process.env.LOGIN_LATER_TIME}m`, //토큰 유효 시간
                 }, (err, token)=>{
@@ -115,8 +117,10 @@ const getUserInfo = async (body: any) => {
             `SELECT u.user_uuid as 'id' 
                    , u.user_name as 'name'
                    , u.user_reg as 'regDate'
+                   , u.user_vacation as 'vacation'
                    , u.user_auth_id as 'auth' 
                    , d.dept_name as 'dept'
+                   , d.dept_id as 'deptId'
                    , a.user_auth_name as 'authName' 
                    , u.password as 'password'
                  FROM user u INNER JOIN dept_code d 

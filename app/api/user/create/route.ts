@@ -18,7 +18,12 @@ export async function POST(req: NextRequest) {
     let result = await insertUser(createData);
 
     if(result){
-        let data : any = {name:createData.userName,category:'create',title:`${createData.userName}님 신규가입 되었습니다.`,link:`/employee/${uuid}`}
+        let data : any = {
+             name:createData.userName
+            ,category:'create'
+            ,title:`${createData.userName}님 신규가입 되었습니다.`
+            ,link:`/employee/${uuid}`
+            ,dept: 0 }
         await insertAlert(data)
 
         return NextResponse.json(true);
