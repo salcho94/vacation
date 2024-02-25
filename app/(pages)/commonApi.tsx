@@ -54,6 +54,20 @@ export const getUserInfo = async () =>{
     });
 }
 
+export const getNowUserInfo = async (uuid: string) => {
+    return new Promise(function(resolve, reject) {
+        axios.get('/api/user', {
+            params: { uuid: uuid }
+        })
+            .then(function(response:any) {
+                resolve(response.data);
+            })
+            .catch(function(error:any) {
+                reject(error);
+            });
+    });
+};
+
 export const getUserDetail = async (uuid:string) =>{
     return new Promise(function(resolve, reject) {
         axios.get('/api/employee/view',{

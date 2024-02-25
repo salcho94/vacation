@@ -35,8 +35,7 @@ export async function POST(req: NextRequest,res: NextResponse) {
                     authName:rows.authName,
                     dept:rows.dept,
                     deptId:rows.deptId,
-                    regDate:rows.regDate,
-                    vacation:rows.vacation
+                    regDate:rows.regDate
                 },  process.env.SECRET_KEY as string, {
                     expiresIn: `${process.env.LOGIN_LATER_TIME}m`, //토큰 유효 시간
                 }, (err, token)=>{

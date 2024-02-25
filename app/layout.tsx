@@ -1,4 +1,5 @@
 import './globals.css';
+//import Providers from "@/app/Providers";
 import React from "react";
 
 
@@ -11,6 +12,7 @@ export const metadata = {
   description,
 };
 
+
 export default function RootLayout({
   children,
 }: {
@@ -18,9 +20,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className="content-center">{children}</body>
+        <body className="content-center">
+              {children}
+        </body>
     </html>
   );
 }
+
+{/* <body className="content-center"><Providers>{children}</Providers></body>*/}
 
 

@@ -153,6 +153,7 @@ export default function EmployeeView(props: any) {
                                                         onChange={(e )=>{handleVacationChange(e) }}
                                                         id="userVacation"
                                                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                                        step="0.1"
                                                         defaultValue={userDetail?.userVacation}  />
                                                     :
                                                     <input
@@ -161,6 +162,7 @@ export default function EmployeeView(props: any) {
                                                         onChange={(e )=>{handleVacationChange(e) }}
                                                         id="userVacation"
                                                         className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                                                        step="0.1"
                                                         defaultValue={0}  />
                                                 }
                                             </div>
