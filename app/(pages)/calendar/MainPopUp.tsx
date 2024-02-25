@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 // @ts-ignore
 import { nord } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import { useQuery } from "@tanstack/react-query";
+
 import {SubmitHandler, useForm} from "react-hook-form";
 import {getDeptUser, getNowUserInfo} from "@/app/(pages)/commonApi";
 import axios from "axios";
