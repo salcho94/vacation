@@ -1,3 +1,4 @@
+/*
 "use client"
 
 import React from "react";
@@ -16,4 +17,4 @@ function Providers({ children }: React.PropsWithChildren) {
     );
 }
 
-export default Providers;
+export default Providers;*/
