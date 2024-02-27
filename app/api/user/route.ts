@@ -7,21 +7,12 @@ import {pool} from "@/app/api/db.config";
 
 export async function GET(req: NextRequest) {
     await loggerMiddleware(req);
-    let res: NextResponse = new NextResponse();
-    const uuid = req.nextUrl.searchParams.get("uuid");
-
-    if(uuid){
-        let result =   await getUserInfo(uuid);
-        if(result){
-            res = NextResponse.json(result);
-        }
-    }else{
-        let result = await authenticate(req);
-        if(result.decoded){
-            res = NextResponse.json(result.decoded);
-        }
+    let result:any = await authenticate(req);
+    let userInfo;
+    if(result){
+        userInfo =   await getUserInfo(result.decoded.userId);
     }
-    return res;
+    return NextResponse.json(userInfo);
 }
 
 
@@ -34,11 +25,12 @@ const getUserInfo = async (uuid: string) => {
         result = await conn.query(
             `SELECT u.user_vacation as 'vacationCnt',
                         u.user_name as 'userName',
+                        u.user_uuid as 'userUuid',
                         a.user_auth_id as 'authId',
                         a.user_auth_name  as 'authName',
                         d.dept_id  as 'deptId',
                         d.dept_name  as 'deptName',
-                        u.user_reg as 'userReg'
+                        u.user_reg as 'regDate'
                 FROM user u INNER JOIN auth_code a
                     ON u.user_auth_id = a.user_auth_id
                     INNER JOIN dept_code d 

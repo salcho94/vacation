@@ -5,7 +5,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { nord } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 import {SubmitHandler, useForm} from "react-hook-form";
-import {getDeptUser, getNowUserInfo} from "@/app/(pages)/commonApi";
+import {getDeptUser } from "@/app/(pages)/commonApi";
 import axios from "axios";
 
 
@@ -16,13 +16,14 @@ interface SelectDate{
     title:string
 }
 interface UserInfo{
-    userId: string,
+    userUuid:string,
     userName:string,
-    auth:number,
+    authId:number,
     authName:string,
-    dept:string,
+    deptName:string,
     deptId:number,
-
+    userReg:string,
+    vacationCnt:number
 }
 interface MainPopUpProps {
     onClose: () => void;
@@ -30,12 +31,6 @@ interface MainPopUpProps {
     selectDate:SelectDate;
 }
 
-interface NowUserInfo {
-    vacationCnt : number,
-    userName:string,
-    authName:string,
-    deptName:string
-}
 
 interface VacationData {
     start: string;
@@ -79,12 +74,7 @@ const MainPopUp: React.FC<MainPopUpProps> = ({ selectDate,userInfo,onClose }) =>
         ,{title:'출장 신청',value:'getter',subTitle:'출장지 정보'}
     ];
     const [useHalf , setUseHalf] = useState(false);
-    const [nowUserInfo , setNowUserInfo] = useState<NowUserInfo>({
-        vacationCnt : 0,
-        userName:"",
-        authName:"",
-        deptName:""
-    })
+
     const [cateGory, setCateGory] = useState(cate);
     const [cateGoryStep, setCateGoryStep] = useState(0);
     const [userDept,setUserDept] = useState<UserDept[]>([{
@@ -103,12 +93,10 @@ const MainPopUp: React.FC<MainPopUpProps> = ({ selectDate,userInfo,onClose }) =>
 
 
     useEffect(() => {
-        getDeptUser(userInfo.deptId,userInfo.auth).then((data :any) => {
+        getDeptUser(userInfo.deptId,userInfo.authId).then((data :any) => {
             setUserDept(data);
         })
-        getNowUserInfo(userInfo.userId).then((data :any) => {
-            setNowUserInfo(data);
-        })
+
         // 상태 초기화 로직
         return () => {
             setUserDept([{
@@ -117,14 +105,8 @@ const MainPopUp: React.FC<MainPopUpProps> = ({ selectDate,userInfo,onClose }) =>
                 userName:"",
                 userUuid:""
             }]);
-            setNowUserInfo({
-                vacationCnt : 0,
-                userName:"",
-                authName:"",
-                deptName:""
-            });
         };
-    },[userInfo.deptId,userInfo.auth,userInfo.userId])
+    },[userInfo.deptId,userInfo.authId,userInfo.userUuid])
 
     //슈퍼관리자 스스로 결재시 타는 코드
     const superVacationInsert = async (data: VacationData) => {
@@ -157,7 +139,7 @@ const MainPopUp: React.FC<MainPopUpProps> = ({ selectDate,userInfo,onClose }) =>
         }else{
             data.useVacation = 0.5;
         }
-        if(cateGoryStep===0 && (Number(data.useVacation) > nowUserInfo.vacationCnt)){
+        if(cateGoryStep===0 && (Number(data.useVacation) > userInfo.vacationCnt)){
             alert("연차일수가 부족합니다.");
             return false;
         }else if(data.upperUser == ""){
@@ -166,13 +148,13 @@ const MainPopUp: React.FC<MainPopUpProps> = ({ selectDate,userInfo,onClose }) =>
         }else{
             if(confirm(`${cateGory[cateGoryStep].title}을 요청 하시겠습니까?`)){
                 let result;
-                if(userInfo.auth === 1){
+                if(userInfo.authId === 1){
                     result = await superVacationInsert(data);
                 }else{
                     result = await vacationInsert(data)
                 }
                 if(result){
-                    alert(`${cateGory[cateGoryStep].title} 완료되었습니다. ${userInfo.auth !== 1 ? '결재 이후 반영됩니다.' : ''}`);
+                    alert(`${cateGory[cateGoryStep].title} 완료되었습니다. ${userInfo.authId !== 1 ? '결재 이후 반영됩니다.' : ''}`);
                     window.location.reload();
                 }else{
                     alert(`${cateGory[cateGoryStep].title} 실패 하였습니다.`);
@@ -203,24 +185,24 @@ const MainPopUp: React.FC<MainPopUpProps> = ({ selectDate,userInfo,onClose }) =>
                     {
                         `💌 ${cateGory[cateGoryStep].title} 정보`+
                         "\n"+"------------------------------------------" +
-                        "\n"+"이름 : "+ nowUserInfo.userName +
+                        "\n"+"이름 : "+ userInfo.userName +
                         "\n"+"직급 : "+ JSON.stringify(userInfo.authName) +
-                        "\n"+"부서 : "+ JSON.stringify(userInfo.dept) +
-                        (cateGoryStep === 0 ? "\n"+ "나의연차일수 : " + nowUserInfo.vacationCnt + "\n"+"사용일수 : "+ (useHalf == true? 0.5 : useCount) : "") +
+                        "\n"+"부서 : "+ JSON.stringify(userInfo.deptName) +
+                        (cateGoryStep === 0 ? "\n"+ "나의연차일수 : " + userInfo.vacationCnt + "\n"+"사용일수 : "+ (useHalf == true? 0.5 : useCount) : "") +
                         "\n"+"신청일 : "+ viewDate
                     }
                 </SyntaxHighlighter>
                     <form  onSubmit={handleSubmit(onSubmitHandler)}>
-                        <input  {...register("userUuid")} type="hidden" defaultValue={userInfo.userId}/>
+                        <input  {...register("userUuid")} type="hidden" defaultValue={userInfo.userUuid}/>
                         <input  {...register("start")} type="hidden" defaultValue={selectDate.start}/>
                         <input  {...register("end")} type="hidden" defaultValue={replaceDate(end)}/>
                         <input  {...register("deptId")} type="hidden" defaultValue={userInfo.deptId}/>
                         <input  {...register("userName")} type="hidden" defaultValue={userInfo.userName}/>
                         <div className="grid grid-cols-1 gap-4">
                             <div>
-                                <label htmlFor="full_name" className="text-sm font-medium">결재자 {userInfo.auth === 1 && <span className="text-red-600 float-right">(슈퍼관리자는 본인이 결재 가능)</span>} </label>
+                                <label htmlFor="full_name" className="text-sm font-medium">결재자 {userInfo.authId === 1 && <span className="text-red-600 float-right">(슈퍼관리자는 본인이 결재 가능)</span>} </label>
                                 {
-                                    userInfo.auth === 1 ?
+                                    userInfo.authId === 1 ?
                                         <input
                                             {...register("upperUser")}
                                             type="text"

@@ -54,20 +54,6 @@ export const getUserInfo = async () =>{
     });
 }
 
-export const getNowUserInfo = async (uuid: string) => {
-    return new Promise(function(resolve, reject) {
-        axios.get('/api/user', {
-            params: { uuid: uuid }
-        })
-            .then(function(response:any) {
-                resolve(response.data);
-            })
-            .catch(function(error:any) {
-                reject(error);
-            });
-    });
-};
-
 export const getUserDetail = async (uuid:string) =>{
     return new Promise(function(resolve, reject) {
         axios.get('/api/employee/view',{
@@ -83,6 +69,15 @@ export const getUserDetail = async (uuid:string) =>{
 export const getAlert = async () =>{
     return new Promise(function(resolve, reject) {
         axios.get('/api/alert')
+            .then(function (response) {
+                resolve(response.data);
+            })
+    });
+}
+
+export const getVacation = async () => {
+    return new Promise(function(resolve, reject) {
+        axios.get('/api/calendar')
             .then(function (response) {
                 resolve(response.data);
             })

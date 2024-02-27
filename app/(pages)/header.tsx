@@ -2,15 +2,10 @@
 
 import React, {useEffect, useState} from "react";
 import Link from "next/link";
-import {getAuthInfo, getDeptInfo, getUserInfo, logOut} from "@/app/(pages)/commonApi";
+import {getUserInfo, logOut} from "@/app/(pages)/commonApi";
 
 export default function Header() {
-    const [userInfo,setUserInfo] = useState<any>( {userId: 0,
-        userName: "",
-        auth:"",
-        authName:"",
-        dept:"",
-        regDate:""})
+    const [userInfo,setUserInfo] = useState<any>()
 
     useEffect(() => {
         getUserInfo().then(res => {setUserInfo(res)});
@@ -30,7 +25,7 @@ export default function Header() {
                             <li className="mr-3">
                                 <a className="inline-block py-2 px-4 text-white no-underline" href="/mypage/info">내 정보</a>
                             </li>
-                            { userInfo?.auth === 1 &&
+                            { userInfo?.authId === 1 &&
                             <li className="mr-3">
                                 <a className="inline-block py-2 px-4 text-white no-underline" href="/employee/create">직원관리</a>
                             </li>

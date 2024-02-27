@@ -8,12 +8,7 @@ import {getUserInfo} from "@/app/(pages)/commonApi";
 
 export default function Info() {
 
-    const [userInfo,setUserInfo] = useState<any>( {userId: 0,
-        userName: "",
-        auth:"",
-        authName:"",
-        dept:"",
-        regDate:""})
+    const [userInfo,setUserInfo] = useState<any>()
 
     useEffect(()=>{
         getUserInfo().then(res => setUserInfo(res));
@@ -42,7 +37,7 @@ export default function Info() {
                                                 <input
                                                     type="text"
                                                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                                    defaultValue={userInfo.userName && userInfo.userName}
+                                                    defaultValue={userInfo?.userName && userInfo.userName}
                                                     readOnly={true}
                                                 />
                                                 </strong>
@@ -53,7 +48,7 @@ export default function Info() {
                                                 <input
                                                     type="text"
                                                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                                    defaultValue={userInfo.authName && userInfo.authName}
+                                                    defaultValue={userInfo?.authName && userInfo.authName}
                                                     readOnly={true}
                                                 />
                                                 </strong>
@@ -64,7 +59,7 @@ export default function Info() {
                                                 <input
                                                     type="text"
                                                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                                    defaultValue={userInfo.dept && userInfo.dept}
+                                                    defaultValue={userInfo?.deptName && userInfo.deptName}
                                                     readOnly={true}
                                                 />
                                                 </strong>
@@ -75,7 +70,7 @@ export default function Info() {
                                                 <input
                                                     type="text"
                                                     className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                                                    defaultValue={userInfo.regDate && userInfo.regDate.substring(0,10)}
+                                                    defaultValue={userInfo?.regDate && userInfo.regDate.substring(0,10)}
                                                     readOnly={true}
                                                 />
                                                 </strong>

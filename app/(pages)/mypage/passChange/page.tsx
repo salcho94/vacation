@@ -3,10 +3,8 @@
 import React, {useEffect, useState} from "react";
 
 import axios from "axios";
-import Link from "next/link";
-import {SubmitHandler, useForm} from "react-hook-form";
-import {getAuthInfo, getDeptInfo} from "@/app/(pages)/commonApi";
 
+import {SubmitHandler, useForm} from "react-hook-form";
 
 interface password {
     bePassword: string;
@@ -18,8 +16,6 @@ export default function PassChange() {
         , handleSubmit
         , watch
         , formState: { errors } } = useForm<password>();
-
-
 
 
     const handlePassChange: SubmitHandler<password> = async (data) => {
