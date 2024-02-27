@@ -139,7 +139,7 @@ export default function Calendar() {
                     <div className="font-bold pt-5">
                         <MainAlertList items={alerts} />
                         <div className="text-center pt-3 pb-3 text-xl">
-                            <strong>나의 일정</strong>
+                            <strong>오늘의 일정</strong>
                         </div>
                         <TodayAlertList todayItems={todayAlertData} />
                     </div>
