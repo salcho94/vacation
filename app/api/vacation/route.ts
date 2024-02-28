@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
             title = `${vacationData.userName} 님의 미팅일정이 생성 되었습니다.`;
         }else{
             await updateVacation(vacationData)
-            title =  `${vacationData.userName} 님의 ${vacationData.halfType? vacationData.halfType +'반차' : '휴가'} 신청이 완료되었습니다.`
+            title =  `${vacationData.userName} 님의 ${vacationData.halfType? vacationData.halfType +'반차' : '연차'} 신청이 완료되었습니다.`
         }
 
         let data : any = {

@@ -88,7 +88,7 @@ export default function Calendar() {
         };
 
         fetchData();
-    }, []);
+    }, [isPopupOpen]);
 
     const togglePopup = () => {
         setIsPopupOpen(!isPopupOpen);
@@ -104,6 +104,17 @@ export default function Calendar() {
         )}`;
     }
 
+    function incrementDay(dateString: string): string {
+        const date = new Date(dateString);
+        date.setDate(date.getDate() + 1);
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+
     const isDateBeforeToday = (targetDate: string): boolean => {
         const target = new Date(targetDate);
         const today = new Date();
@@ -112,12 +123,24 @@ export default function Calendar() {
     };
 
     const handleDateClick = (e: any) => {
-        if (isDateBeforeToday(e.startStr)) {
-            setSelectDate({ type: 'date', start: e.startStr, end: e.endStr, title: '' });
+        if (isDateBeforeToday(e.dateStr)) {
+            setSelectDate({ type: 'date', start: e.dateStr, end: incrementDay(e.dateStr), title: '' });
             togglePopup();
         } else {
-            setSelectDate({ type: 'alert', title: `오늘보다 이전인 날짜는 신청이 불가능합니다.`, start: '', end: '' });
+            setSelectDate({ type: 'alert', title: `오늘보다 이전인 날짜는 신청이 불가능합니다.`, start: '', end: '' })
             togglePopup();
+        }
+    };
+
+    const handleDateSelect = (e: any) => {
+        if(incrementDay(e.startStr) !== e.endStr){
+            if (isDateBeforeToday(e.startStr)) {
+                setSelectDate({ type: 'date', start: e.startStr, end: e.endStr, title: '' });
+                togglePopup();
+            } else {
+                setSelectDate({ type: 'alert', title: `오늘보다 이전인 날짜는 신청이 불가능합니다.`, start: '', end: '' });
+                togglePopup();
+            }
         }
     };
 
@@ -145,16 +168,21 @@ export default function Calendar() {
                     </div>
                 </div>
                 <div className="md:w-3/5">
-                    <div className="font-bold p-3 pt-10">
+                    <div className="font-bold p-3 pt-10 ">
                         <FullCalendar
-                            events={calendarData}
-                            plugins={[googleCalendarPlugin, resourceTimelinePlugin, dayGridPlugin, interactionPlugin, timeGridPlugin]}
-                            select={(e) => {
+                            dateClick={(e) => {
                                 handleDateClick(e);
+                            }}
+                            select={(e) => {
+                                handleDateSelect(e);
                             }}
                             eventClick={(e) => {
                                 handleShowView(e);
                             }}
+                            events={calendarData}
+                            expandRows={true}
+                            dayMaxEventRows={true}
+                            plugins={[googleCalendarPlugin, resourceTimelinePlugin, dayGridPlugin, interactionPlugin, timeGridPlugin]}
                             headerToolbar={{
                                 left: 'today,dayGridMonth,dayGridDay',
                                 center: 'title',
