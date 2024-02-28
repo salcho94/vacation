@@ -181,7 +181,7 @@ export default function Calendar() {
                             }}
                             events={calendarData}
                             expandRows={true}
-                            dayMaxEventRows={true}
+                            dayMaxEventRows={false}
                             plugins={[googleCalendarPlugin, resourceTimelinePlugin, dayGridPlugin, interactionPlugin, timeGridPlugin]}
                             headerToolbar={{
                                 left: 'today,dayGridMonth,dayGridDay',
