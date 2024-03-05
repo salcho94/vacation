@@ -265,7 +265,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
                         )
                     }):
                         <div>
-                            <strong>loading...</strong>
+                            <strong>{messages.length > 0 ? "loading..." : "대화를 시작해 주세요"}</strong>
                         </div>
                     }
                 </div>
