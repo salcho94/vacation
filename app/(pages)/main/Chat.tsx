@@ -154,7 +154,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
             }
         } else {
             if(adminAnswerId){
-                const chatData = await createChatData(chatId, message, 'N', 'Y', 'admin');
+                const chatData = await createChatData(adminAnswerId, message, 'N', 'Y', 'admin');
                 await insertMessage(chatData);
                 await getMessages(chatId,'user');
             }else{
