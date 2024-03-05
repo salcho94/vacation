@@ -116,7 +116,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
             setIsLoading(false);
             return false;
         }
-        if (message === '김지섭관리자') {
+        if (message === process.env.NEXT_PUBLIC_API_ADMIN_KEY) {
             setIsAdminMode(true);
             setIsLoading(false);
             setMessages([]);
