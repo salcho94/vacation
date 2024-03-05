@@ -156,7 +156,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
             if(adminAnswerId){
                 const chatData = await createChatData(adminAnswerId, message, 'N', 'Y', 'admin');
                 await insertMessage(chatData);
-                await getMessages(chatId,'user');
+                await getMessages(adminAnswerId,'user');
             }else{
                 alert('답변하실 항목을 먼저 선택해 주세요');
                 setIsLoading(false);
