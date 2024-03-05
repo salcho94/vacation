@@ -1,4 +1,4 @@
-import Form from "@/app/Form";
+import Form from "@/app/(pages)/main/Form";
 import Link from "next/link";
 import * as process from "process";
 

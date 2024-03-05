@@ -21,7 +21,7 @@ interface Props {
 const TodayAlertList: React.FC<Props> = ({ todayItems }) => { // 수정된 부분: 매개변수명 변경
     return (
         <div className="overflow-y-scroll max-h-96  border-indigo-950 border-2 rounded-1xl">
-            {todayItems.map((today, index) => (
+            {todayItems.length > 0 ? todayItems.map((today, index) => (
                 <div key={index}>
                     <SyntaxHighlighter language="javascript" style={nord} className="code-editor text-sm" >
                         {
@@ -30,7 +30,13 @@ const TodayAlertList: React.FC<Props> = ({ todayItems }) => { // 수정된 부�
                         }
                     </SyntaxHighlighter>
                 </div>
-            ))}
+            )):
+                <div>
+                    <SyntaxHighlighter language="javascript" style={nord} className="code-editor text-sm" >
+                            일정이 존재하지 않습니다.
+                    </SyntaxHighlighter>
+                </div>
+            }
         </div>
     );
 };

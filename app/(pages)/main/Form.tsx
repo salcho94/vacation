@@ -4,6 +4,8 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter  } from "next/navigation";
 import axios from "axios";
 import {Cookies} from "react-cookie";
+import {useState} from "react";
+import Chat from "./Chat"
 
 const cookies = new Cookies();
 interface loginData {
@@ -11,8 +13,10 @@ interface loginData {
     password: string;
 }
 export default function Form(){
+    const [isChatOpen, setIsChatOpen] = useState(false);
     const router = useRouter ();
     const { register, handleSubmit, watch, formState: { errors } } = useForm<loginData>();
+
 
     const onSubmitHandler: SubmitHandler<loginData> = (data) => {
         axios
@@ -89,12 +93,13 @@ export default function Form(){
                             className="flex h-10 w-full items-center justify-center rounded-md border text-sm transition-all focus:outline-none"
                         >
                             로그인
-                            <span aria-live="polite" className="sr-only" role="status">
-                    </span>
+                            <span aria-live="polite" className="sr-only" role="status"></span>
                         </button>
                     </form>
+                    <Chat />
                 </div>
             </div>
         </>
     )
 }
+
