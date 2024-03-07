@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
 import { v4 as uuid_v4 } from "uuid";
-
 import axios from "axios";
+import {SENDMAIL} from "@/app/(pages)/commonApi";
 
 interface ChatProps {
     setIsChatOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -119,6 +119,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
 
     const handleMessageSend = async () => {
         setIsLoading(true);
+
         if (!message) {
             alert('메시지를 입력해주세요');
             setIsLoading(false);
@@ -133,6 +134,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
             return false;
         }
         if (!isAdminMode) {
+
             if (!chatId) {
                 try {
                     const uuid: string = uuid_v4();
@@ -141,6 +143,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
                         const chatData = await createChatData(uuid, message, 'Y', 'N', 'user');
                         await insertMessage(chatData);
                         await getMessages(uuid,'user');
+                        SENDMAIL(chatData);
                     }
                 } catch (e) {
                     console.error(e + 'chatId 생성 오류');

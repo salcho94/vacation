@@ -142,3 +142,16 @@ export const UPDATE = (url:string,msg:string,body:any) => {
             })
     }
 }
+
+
+export const SENDMAIL = (body:any) => {
+        axios.post(`/api/mail`, body)
+            .then(function (response) {
+                // 성공 핸들링
+                console.log(response)
+            })
+            .catch(function (error) {
+                // 에러 핸들링
+                console.log("메일 전송 실패함" + error);
+            })
+}
