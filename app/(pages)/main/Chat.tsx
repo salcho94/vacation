@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState, useRef, useCallback} from 'react';
 import { v4 as uuid_v4 } from "uuid";
-import { Cookies } from "react-cookie";
+
 import axios from "axios";
 
 interface ChatProps {
@@ -8,32 +8,39 @@ interface ChatProps {
     isChatOpen: boolean;
 }
 
+
 const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
+
     const handleClose = () => {
         setIsChatOpen(false);
     };
 
-    const cookies = new Cookies();
-    const chatId = cookies.get('chatId');
+    const chatId : string | null = window.localStorage.getItem('chatId');
     const [isAdminMode, setIsAdminMode] = useState(false);
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState<any>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [adminAnswerId, setAdminAnswerId] = useState("");
+    const scrollRef = useRef<any>();
 
     useEffect(() => {
         if (chatId && !isAdminMode) {
             const interval = setInterval(async () => {
                 await getMessages(chatId,'user');
             }, 2000);
-
             return () => {
                 clearInterval(interval);
             };
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [chatId, isAdminMode]);
 
-    const getMessages = async (chatId: string,mode:string) => {
+    const scrollToBottom = () => {
+        if (scrollRef.current) {
+            scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+    };
+    const getMessages = async (chatId: string|null,mode:string) => {
         try {
             const response = await axios.get("/api/chat", {
                 params: { "chatId": chatId,"mode":mode }
@@ -43,6 +50,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
             }else{
                 setMessages(response.data);
             }
+            scrollToBottom()
         } catch (error) {
             console.error("Error fetching messages:", error);
             alert("Error fetching messages");
@@ -128,11 +136,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
             if (!chatId) {
                 try {
                     const uuid: string = uuid_v4();
-                    cookies.set("chatId", uuid, {
-                        path: "/",
-                        secure: false,
-                        sameSite: "lax",
-                    });
+                    window.localStorage.setItem('chatId', uuid);
                     if (uuid) {
                         const chatData = await createChatData(uuid, message, 'Y', 'N', 'user');
                         await insertMessage(chatData);
@@ -173,10 +177,13 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
             await handleMessageSend();
         }
     };
+
     const answerChat = async (chatId: string) => {
         setAdminAnswerId(chatId);
         await getMessages(chatId,'user');
     }
+
+
     return (
         <div className="fixed bottom-0 right-0 w-full md:w-1/3 max-w-md bg-white border-l border-r border-b rounded-t-xl">
             <div className="flex justify-between items-center bg-gray-100 rounded-t-xl p-2">
@@ -187,7 +194,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
                     </svg>
                 </button>
             </div>
-            <div className="p-4 h-64 overflow-y-auto">
+            <div className="p-4 h-64 overflow-y-auto" ref={scrollRef}>
                 <div className="flex flex-col mb-4">
                     <div className="flex items-center mb-2">
                         <div className="w-15 h-10 leading-10 rounded-full bg-gray-300 mr-3 pl-1 pr-1 text-xs font-bold">관리자</div>
@@ -195,13 +202,15 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
                             {!isAdminMode ? '궁금한점이 있으시면 문의를 남겨주세요.' : '답변을 기다리는 유저 목록입니다.'}
                         </div>
                     </div>
-                    { isAdminMode &&
-                    <div className="flex justify-center">
-                        <div className="text-center w-3/4 rounded-full bg-red-500 text-white">
-                           답변할 문항을 선택해 주세요
+                    {
+                        (isAdminMode && messages.length > 0) &&
+                        <div className="flex justify-center">
+                            <div className="text-center w-3/4 rounded-full bg-red-500 text-white">
+                               답변할 문항을 선택해 주세요
+                            </div>
                         </div>
-                    </div>
                     }
+
 
                     {(messages.length > 0 && !isLoading) ? messages.map((msg: any, index: number) => {
                         const nowDay = msg.sendDate;
@@ -265,7 +274,7 @@ const Chat: React.FC<ChatProps> = ({ setIsChatOpen, isChatOpen }) => {
                         )
                     }):
                         <div>
-                            <strong>{!chatId ? "대화를 시작해 주세요" : "로드중 입니다.."}</strong>
+                            <strong>{chatId ? "로드중 입니다.." : "대화를 시작해 주세요" } {(isAdminMode && messages.length == 0) && "답변할 목록이 없습니다."}</strong>
                         </div>
                     }
                 </div>
