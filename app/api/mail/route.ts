@@ -26,6 +26,9 @@ const transporter = nodemailer.createTransport({
     },
 });
 
+
+
+
 const  sendEmail = ({message,location,locationIp,sendDate,sendTime,chatId}: EmailData) => {
         const mailData = {
                 to: process.env.NODE_EMAIL_ID,
